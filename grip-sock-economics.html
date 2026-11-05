@@ -42,6 +42,9 @@ button{font:inherit;color:inherit;cursor:pointer}
 .save{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;background:var(--card);border-radius:999px;padding:6px 12px;box-shadow:var(--shadow)}
 .save i{width:8px;height:8px;border-radius:50%;background:#5DBB6E}
 .cloud{position:absolute;pointer-events:none;opacity:.55;font-size:28px;line-height:1}
+.logout{display:inline-flex;align-items:center;gap:6px;background:var(--pink);color:var(--ink);text-decoration:none;font-size:14px;font-weight:800;border-radius:999px;padding:8px 16px;box-shadow:var(--shadow)}
+.logout:hover{background:#FFB3CF}
+.logout[hidden]{display:none}
 
 /* Big answer */
 .answer{position:relative;overflow:hidden;border-radius:28px;padding:32px 32px 28px;display:flex;gap:20px;align-items:center;box-shadow:var(--shadow);transition:background .4s}
@@ -257,7 +260,7 @@ tbody tr+tr td{border-top:1px solid var(--line)}
       <h1>🧦 My Grip Sock Money Plan</h1>
       <div class="drop"><span>Current drop:</span><input id="dropName" aria-label="Current drop name" value="Drop 01 · Cloud Grip"></div>
     </div>
-    <div style="display:flex;gap:8px;align-items:center"><span class="save" id="saveState"><i></i><span>Saved</span></span><a class="save" id="logoutLink" href="/logout" hidden style="text-decoration:none;color:var(--ink);font-weight:700">Log out</a></div>
+    <div style="display:flex;gap:8px;align-items:center"><span class="save" id="saveState"><i></i><span>Saved</span></span><a class="logout" id="logoutLink" href="/logout" hidden>🚪 Log out</a></div>
   </header>
 
   <!-- 1. The big answer -->

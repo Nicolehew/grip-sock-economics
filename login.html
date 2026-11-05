@@ -33,6 +33,8 @@
   :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
   .err{background:var(--red-t);color:var(--ink);border-radius:12px;padding:10px 12px;font-size:14px}
   .err b{color:var(--pink-i)}
+  .ok{background:#EFFFF1;color:var(--ink);border-radius:12px;padding:10px 12px;font-size:14px}
+  .ok b{color:#23703B}
 </style>
 </head>
 <body>
@@ -40,6 +42,7 @@
     <span class="cloud" aria-hidden="true">☁️</span>
     <span class="logo" aria-hidden="true">🧦</span>
     <div><h1>My Grip Sock Money Plan</h1><p>Log in to see your dashboard.</p></div>
+    <div class="ok" id="out" role="status" hidden>👋 <b>You've logged out.</b> Log in again any time.</div>
     <div class="err" id="err" role="alert" hidden><b>That username or password didn't match.</b> Check for typos and try again.</div>
     <form method="post" action="/login" id="f">
       <label>Username<input name="username" id="u" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
@@ -49,7 +52,9 @@
     <p style="font-size:13px">You stay logged in on this device for 30 days.</p>
   </main>
 <script>
-  if (new URLSearchParams(location.search).has('error')) document.getElementById('err').hidden = false;
+  const q = new URLSearchParams(location.search);
+  if (q.has('error')) document.getElementById('err').hidden = false;
+  else if (q.has('out')) document.getElementById('out').hidden = false;
   const p = document.getElementById('p'), show = document.getElementById('show');
   show.addEventListener('click', () => { const on = p.type === 'password'; p.type = on ? 'text' : 'password'; show.textContent = on ? 'Hide' : 'Show'; show.setAttribute('aria-label', on ? 'Hide password' : 'Show password'); });
   document.getElementById('f').addEventListener('submit', () => { const b = document.getElementById('go'); b.disabled = true; b.textContent = 'Logging in…'; });

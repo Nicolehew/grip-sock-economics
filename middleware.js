@@ -43,7 +43,7 @@ export default async function middleware(request) {
   const url = new URL(request.url);
   const path = url.pathname.replace(/\.html$/, '');
 
-  if (path === '/logout') return redirect('/login', `${COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`);
+  if (path === '/logout') return redirect('/login?out=1', `${COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax`);
 
   if (path === '/login') {
     if (request.method === 'POST') {
