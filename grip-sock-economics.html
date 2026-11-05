@@ -386,7 +386,7 @@ const GROUPS=[
   {c:'pink',tag:'💗 Costs',t:'What each sale costs me',costs:true,main:['fx'],note:'dv-cost',more:['shopeePct','tiktokPct','shopeeFee','tiktokFee','gateway'],moreTitle:'Platform and payment fees',moreNote:'dv-mix'},
   {c:'peach',tag:'🧡 Stock',t:'My first order',main:['moq'],note:'dv-stock'},
   {c:'lav',tag:'💜 Ads',t:'My ads',main:['adBudget','cpa'],note:'dv-ads',more:['organic']},
-  {c:'pink',tag:'🌸 Start-up costs',t:'One-time costs',list:'launch',lt:'Total start-up costs'},
+  {c:'pink',tag:'🌸 Start-up costs',t:'One-time costs, stock included',list:'launch',lt:'Total start-up costs'},
   {c:'pink',tag:'🔄 Monthly bills',t:'Every month',list:'fixed',lt:'Total per month'}
 ];
 
@@ -458,10 +458,13 @@ function model(I,launchT,fixedM,sc,costs){
     if(m>=N&&payback!==null)break;
   }
   const shown=rows.slice(0,Math.min(rows.length,Math.max(N,payback||0)+1));
-  const need=-Math.min(...shown.map(r=>r.money));
+  // Money to start = what you pay before the first sale (stock + start-up). Any further dip after launch is reported separately.
+  const need=invCost+launchT;
+  let low=0,lowM=0; shown.forEach(r=>{if(r.money<low){low=r.money;lowM=r.m}});
+  const extra=Math.max(0,-low-need), extraM=extra>1?lowM:null;
   const profitN=T.profit-launchT, putIn=invCost+launchT+fixedM*N;
   const ordersPM=ppo>0?pairsPM/ppo:0, adNeedPM=ordersPM*(1-org)*cpa;
-  return{I,sc,landed,cpa,org,aov,ppo,web,feeRate,types,avg,stock,invCost,N,pairsPM,rows,shown,payback,profitMonth,need,profitN,putIn,
+  return{I,sc,landed,cpa,org,aov,ppo,web,feeRate,types,avg,stock,invCost,N,pairsPM,rows,shown,payback,profitMonth,need,extra,extraM,profitN,putIn,
     roi:putIn>0?profitN/putIn:0,T,launchT,fixedM,ordersPM,adNeedPM,sellOut:pairsPM>0?stock/pairsPM:Infinity,stockLeft:Math.max(0,stock-T.units),
     beROAS:avg.before>0?aov/avg.before:Infinity,roas:cpa>0?aov/cpa:Infinity,beCPA:avg.before/(1-org),keepPair:ppo>0?avg.keep/ppo:0};
 }
@@ -479,7 +482,8 @@ function fieldHTML(k){
   return `<div class="field" id="f-${k}"><label for="in-${k}">${esc(f.l)} ${tip}</label>${ctl}</div>`;
 }
 function listHTML(key,lt){
-  return `<div class="list" id="list-${key}">${S[key].map((r,i)=>`<div class="list-row"><div class="box"><input id="${key}-n-${i}" aria-label="Cost name" data-list="${key}" data-i="${i}" data-f="n" value="${esc(r.n)}"></div><div class="box"><span>RM</span><input id="${key}-v-${i}" type="number" inputmode="decimal" aria-label="${esc(r.n)} amount" data-list="${key}" data-i="${i}" data-f="v" value="${r.v}"></div><button type="button" class="x" data-del="${key}" data-i="${i}" aria-label="Remove ${esc(r.n)}">×</button></div>`).join('')}
+  const stockRow=key==='launch'?`<div class="list-row auto" title="Worked out for you from your Costs and MOQ"><div class="box"><span style="color:var(--ink);font-weight:700">🧦 Stock (socks × MOQ, from Costs)</span></div><div class="box"><span>RM</span><b class="num" id="launch-stock" style="padding:0 6px"></b></div><span aria-hidden="true" style="text-align:center">🔒</span></div>`:'';
+  return `<div class="list" id="list-${key}">${stockRow}${S[key].map((r,i)=>`<div class="list-row"><div class="box"><input id="${key}-n-${i}" aria-label="Cost name" data-list="${key}" data-i="${i}" data-f="n" value="${esc(r.n)}"></div><div class="box"><span>RM</span><input id="${key}-v-${i}" type="number" inputmode="decimal" aria-label="${esc(r.n)} amount" data-list="${key}" data-i="${i}" data-f="v" value="${r.v}"></div><button type="button" class="x" data-del="${key}" data-i="${i}" aria-label="Remove ${esc(r.n)}">×</button></div>`).join('')}
   <div class="row" style="justify-content:space-between;flex-wrap:wrap"><button type="button" class="add" data-add="${key}">＋ Add more</button><span class="total">${lt}: <b class="num" id="tot-${key}"></b></span></div></div>`;
 }
 function costHTML(){
@@ -575,6 +579,9 @@ function update(){
     if(c.per==='pair'&&costRM(c,I.fx)>I.price1){
       tt.className='moqtot warn';
       tt.innerHTML=`⚠️ This says <b>${money(amt)} for every pair</b>, which is more than your price of ${rm(I.price1)}. If ${money(amt)} is what you pay for your whole order, change "per pair" to <b>"total for my whole stock order"</b>.`;
+    }else if(c.per==='order'&&costRM(c,I.fx)>I.price1){
+      tt.className='moqtot warn';
+      tt.innerHTML=`⚠️ This says <b>${money(amt)} for every order</b>, which is more than your price of ${rm(I.price1)}. If it's a one-time cost, delete it here and add it under 🌸 Start-up costs. If it's a total for your stock, choose <b>"total for my whole stock order"</b>.`;
     }else if(c.per==='pair'&&c.up){
       tt.innerHTML=`📦 ${money(amt)} × ${nf(M.stock)} pairs (your MOQ) = <b>${c.cur==='RMB'?`RMB ${nf(amt*M.stock)}</b> = <b>${rm(costRM(c,I.fx)*M.stock)}`:rm(costRM(c,I.fx)*M.stock)}</b> for your first order`;
     }else if(c.per==='batch'){
@@ -587,7 +594,7 @@ function update(){
   const upRows=S.costs.filter(isUp);
   $('dv-stock').innerHTML=`${nf(M.stock)} pairs cost you <b>${rm(M.invCost)}</b>${upRows.length>1?` (${upRows.map(c=>`${esc(c.n||'cost')} ${rm(pairRM(c,I)*M.stock)}`).join(' + ')})`:''}. At ${nf(M.pairsPM)} pairs a month they last about <b>${isFinite(M.sellOut)?monthWord(Math.round(M.sellOut*10)/10):'forever'}</b>.`;
   $('dv-ads').innerHTML=M.adNeedPM>I.adBudget*1.05?`To sell ${nf(M.pairsPM)} pairs a month you'd spend about <b>${rm(M.adNeedPM)}</b> on ads, which is more than your budget.`:`To sell ${nf(M.pairsPM)} pairs a month you'd spend about <b>${rm(M.adNeedPM)}</b> on ads. That fits your budget.`;
-  $('tot-launch').textContent=rm(M.launchT); $('tot-fixed').textContent=rm(M.fixedM);
+  $('launch-stock').textContent=nf(M.invCost); $('tot-launch').textContent=rm(M.need); $('tot-fixed').textContent=rm(M.fixedM);
 
   // 1. Big answer
   const adOK=M.adNeedPM<=I.adBudget*1.05; let cls,face,title,sub;
@@ -597,11 +604,12 @@ function update(){
   else if(!adOK){cls='warn';face='🤔';title='Almost there. Your ad budget is too small for the sales you planned.';sub=`Selling ${nf(M.pairsPM)} pairs a month needs about ${rm(M.adNeedPM)} of ads, but your budget is ${rm(I.adBudget)}. Raise the budget, plan fewer sales, or bring down the ad cost per order.`}
   else{cls='warn';face='🤔';title=`Almost there. You'll get your money back in about ${monthWord(M.payback)}, which is a bit slow.`;sub='Try raising your price or lowering your ad cost to get your money back sooner.'}
   if(I.savings>0&&M.need>I.savings)sub+=` Also, you need ${rm(M.need)} to start, but your budget is ${rm(I.savings)}.`;
+  if(M.extra>1)sub+=` After launch, your costs are bigger than your sales, so you'd need another ${rm(M.extra)} by Month ${M.extraM}. Check that no cost in the Costs box is a total entered as "per pair" or "per order".`;
   $('answer').className='answer '+cls; $('ansFace').textContent=face; $('ansTitle').textContent=title; $('ansSub').textContent=sub;
 
   // 2. Key numbers
   anim($('k-need'),M.need,v=>rm(v));
-  $('w-need').textContent=`Stock ${rm(M.invCost)} + start-up costs ${rm(M.launchT)}${M.need>M.invCost+M.launchT+1?', plus early bills and ads before sales catch up':''}. ${I.savings>0?(M.need<=I.savings?`✅ Within your ${rm(I.savings)} budget.`:`⚠️ ${rm(M.need-I.savings)} more than your ${rm(I.savings)} budget.`):''}`;
+  $('w-need').textContent=`Stock ${rm(M.invCost)} + other start-up costs ${rm(M.launchT)}, paid before your first sale. ${M.extra>1?`⚠️ Sales don't cover your costs after launch: you'd need another ${rm(M.extra)} by Month ${M.extraM}. `:''}${I.savings>0?(M.need<=I.savings?`✅ Within your ${rm(I.savings)} budget.`:`⚠️ ${rm(M.need-I.savings)} more than your ${rm(I.savings)} budget.`):''}`;
   anim($('k-keep'),M.keepPair,v=>rm(v,2));
   $('w-keep').textContent='After all your costs, platform fees and ads. Monthly bills come out of the total.';
   const kb=$('k-back');
