@@ -203,6 +203,10 @@ tbody tr+tr td{border-top:1px solid var(--line)}
 
 /* Advisor */
 .adv{display:flex;flex-direction:column;gap:16px;background:var(--lav-t)}
+.adv.agent{background:var(--mint-t)}
+.adv.agent .chip:hover{background:var(--mint)}
+.adv.agent .bub.me{background:var(--mint-i)}
+.adv.agent .btn.primary{background:var(--mint-i)}
 .chips{display:flex;flex-wrap:wrap;gap:8px}
 .chip{border:0;background:var(--card);border-radius:999px;padding:9px 15px;font-size:14px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.06)}
 .chip:hover{background:var(--lav)}
@@ -282,6 +286,24 @@ tbody tr+tr td{border-top:1px solid var(--line)}
         <div class="donut"><div id="donutSvg" style="width:100%;height:100%"></div><div class="mid"><small>I keep</small><b class="num" id="dnKeep">–</b></div></div>
         <div><div class="legend" id="legend"></div><p class="caption" id="dnCaption"></p></div>
       </div>
+    </div>
+    <div class="card adv agent" aria-labelledby="h-dg">
+      <div><h3 id="h-dg" style="font-size:19px">🧑‍💼 Ask the marketing agent</h3><p class="muted" style="margin-top:4px">Looks at where your RM goes above and tells you why you're losing money, or how to keep more from every sale and improve your ROI (what you earn back for every RM 1 you put in).</p></div>
+      <div class="chips" id="dgChips">
+        <button type="button" class="chip" id="dgFirst" data-q="Why am I losing money? Look at where my RM goes for each sale and tell me exactly which numbers cause it.">Why am I losing money?</button>
+        <button type="button" class="chip" data-q="How can I improve my ROI? Give me the changes that would make the biggest difference, with rough RM amounts.">How can I improve my ROI?</button>
+        <button type="button" class="chip" data-q="Which cost should I cut or change first, and what would that save me per pair and over the plan?">Which cost should I cut first?</button>
+        <button type="button" class="chip" data-q="How can marketing bring my ad cost per order down? Give me ideas that suit Pilates grip socks in Malaysia.">How do I lower my ad cost?</button>
+        <button type="button" class="chip" data-q="Should I change my price or my bundle price to keep more per sale? What would you test?">Should I change my price?</button>
+      </div>
+      <div class="adv-log" id="dgLog" aria-live="polite"></div>
+      <form class="adv-form" id="dgForm">
+        <label for="dgInput" class="sr">Your question for the marketing agent</label>
+        <input id="dgInput" autocomplete="off" placeholder="Ask about your costs, ads or profit, e.g. Is free delivery hurting me?">
+        <button type="submit" class="btn primary" id="dgSend">Ask</button>
+        <button type="button" class="btn" id="dgStop" hidden>Stop</button>
+      </form>
+      <div class="adv-foot"><span id="dgNote">Suggestions are a general guide, not a guarantee. Each question uses your own Claude account.</span><button type="button" class="linkbtn" id="dgClear" hidden>Start a new conversation</button></div>
     </div>
   </section>
 
@@ -656,6 +678,8 @@ function renderDonut(M){
   $('dnKeep').textContent=rm(Math.abs(o.keep/n),2); $('dnKeep').style.color=o.keep<0?'var(--pink-i)':'';
   document.querySelector('.donut .mid small').textContent=o.keep<0?'I lose':'I keep';
   $('legend').innerHTML=parts.map(p=>`<div class="leg ${p.l==='I keep'?'keep':''}"><i style="background:${p.c}"></i><span>${esc(p.l)}</span><b class="num">${p.l==='I keep'?rm(o.keep/n,2):rm(p.v,2)}</b></div>`).join('');
+  const losing=M.avg.keep<0||M.profitN<0, fb=$('dgFirst');
+  if(fb){fb.textContent=losing?'Why am I losing money?':'Where can I keep more?';fb.dataset.q=losing?'Why am I losing money? Look at where my RM goes for each sale and tell me exactly which numbers cause it.':'I am making money. Where is the biggest leak in where my RM goes, and how could I keep more from each sale?'}
   $('dnCaption').textContent=o.keep>0?`Out of ${rm(price,2)}, you keep ${rm(o.keep/n,2)}.`:`Out of ${rm(price,2)}, you lose ${rm(-o.keep/n,2)}.`;
 }
 
@@ -854,6 +878,71 @@ $('advChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(
 $('advForm').addEventListener('submit',e=>{e.preventDefault();advAsk($('advInput').value)});
 $('advStop').addEventListener('click',()=>advCtl?.abort());
 $('advClear').addEventListener('click',()=>{if(advBusy)advCtl?.abort();advTurns=[];$('advLog').innerHTML='';$('advClear').hidden=true});
+
+/* ---------- Marketing agent under the donut (same Claude connection) ---------- */
+function dgBreakdown(){
+  const R=runAll(),m=R.mid;
+  const line=o=>{const n=o.n;return `${n===1?'1 pair':n+'-pair bundle'} sold at RM ${nf(o.price,2)}: `+
+    o.items.map(x=>`${x.n} RM ${nf(x.v,2)}`).join(', ')+`, platform & payment fees RM ${nf(o.fees,2)} (${pc(m.feeRate,1)} of the price), ads RM ${nf(o.ads,2)} (RM ${nf(m.cpa,2)} per ad order x ${pc(1-m.org)} of orders from ads). Founder keeps RM ${nf(o.keep,2)} per order = RM ${nf(o.keep/n,2)} per pair.`};
+  return [line(m.types[0]),line(m.types[1]),line(m.types[2]),
+    `Typical order (mix of singles and bundles): RM ${nf(m.aov,2)}, ${nf(m.ppo,2)} pairs, founder keeps RM ${nf(m.avg.keep,2)}.`,
+    `Ads stop paying off above RM ${nf(m.beCPA,2)} per ad order. Each RM 1 of ads brings RM ${nf(m.roas,2)} of sales; at least RM ${nf(m.beROAS,2)} is needed.`,
+    `ROI over ${m.N} months: for every RM 1 put in (stock + start-up costs + monthly bills = RM ${nf(m.putIn)}), the founder gets back RM ${nf(1+m.roi,2)}. Profit RM ${nf(m.profitN)}.`,
+    m.extra>1?`Warning shown on the dashboard: after launch, costs are bigger than sales, needing another RM ${nf(m.extra)} by month ${m.extraM}.`:''
+  ].filter(Boolean).join('\n');
+}
+function dgRules(){
+  return `You are a hands-on e-commerce marketing and profit coach for small Malaysian online brands (Shopee, TikTok Shop, Shopify, Meta and TikTok ads). You are looking at a "Where does my RM go?" chart for a first-time founder selling Pilates grip socks.
+
+Your job: explain why they are losing money (if they are) and how to improve their ROI, which means what they earn back for every RM 1 they put in. Work from the exact numbers below.
+
+Rules:
+- Plain, friendly everyday English, no jargon. If you use a term like CPA, ROAS or AOV, explain it in a few words. Use RM.
+- Point to the specific cost lines that matter most, with their RM amounts. Do the maths for them, e.g. "cutting delivery from RM 7 to RM 5 adds RM 2 per order, about RM 1,200 over 6 months".
+- If a cost looks like a typing mistake (for example a whole-order total entered as a per-pair or per-order cost, or a per-pair cost bigger than the price), say so first and tell them which dropdown to change.
+- Give ideas that fit this product and market: bundles, free delivery thresholds, studio partnerships, UGC and TikTok content, creator affiliates, Shopee/TikTok vouchers, price tests.
+- Typical market figures only as rough ranges, saying they vary. Never invent statistics or sources.
+
+Format:
+- First line: a one-sentence answer.
+- Then 3 to 5 bullet points starting with "- ", each beginning with a bold label like **Biggest leak**, **Quick win**, **Test this** or **Watch out**.
+- Last line: "Next step:" and one concrete action.
+Under 200 words. No headings, no tables, no emojis.
+
+Where each RM goes (current numbers, normal case):
+${dgBreakdown()}
+
+Other plan numbers:
+${advFacts()}`;
+}
+let dgTurns=[],dgCtl=null,dgBusy=false;
+function dgOff(msg){$('dgChips').hidden=true;$('dgForm').hidden=true;$('dgClear').hidden=true;$('dgNote').innerHTML=msg;$('dgNote').className='adv-off'}
+advReady.then(s=>{if(!s)dgOff(`The marketing agent works when you open this page inside Claude: <a href="${ARTIFACT_URL}" target="_blank" rel="noopener">open it in Claude</a>.`)});
+function dgBubble(cls,html){const d=document.createElement('div');d.className='bub '+cls;d.innerHTML=html;$('dgLog').append(d);return d}
+function dgSetBusy(on){dgBusy=on;$('dgSend').disabled=on;$('dgStop').hidden=!on;document.querySelectorAll('#dgChips .chip').forEach(c=>c.disabled=on)}
+async function dgAsk(q){
+  q=q.trim(); if(!q||dgBusy)return;
+  const sample=advSample||await advReady; if(!sample)return;
+  dgBubble('me',esc(q)); $('dgInput').value=''; $('dgClear').hidden=false;
+  const bub=dgBubble('ai wait','Looking at where your RM goes…');
+  dgTurns.push({role:'user',content:q});
+  const input=[{role:'user',content:dgRules()},...dgTurns.slice(-9)];
+  dgCtl=new AbortController(); dgSetBusy(true);
+  try{
+    const {text,truncated}=await sample(input,{cache:false,signal:dgCtl.signal,onText:({text})=>{bub.className='bub ai';bub.innerHTML=advMd(text)}});
+    bub.className='bub ai'; bub.innerHTML=advMd(text)+(truncated?'<p class="muted">(The answer was cut short. Ask a narrower question for the rest.)</p>':'');
+    dgTurns.push({role:'assistant',content:text});
+  }catch(e){
+    dgTurns.pop(); const code=e&&e.code;
+    if(code==='cancelled'){bub.className='bub ai';bub.innerHTML=e.text?advMd(e.text)+'<p class="muted">(Stopped.)</p>':'<p class="muted">Stopped.</p>'}
+    else if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(code)){bub.remove();dgOff('The marketing agent needs permission to use Claude. Reload the page and choose Allow when Claude asks.')}
+    else{bub.className='bub ai err';bub.innerHTML=(e&&e.text?advMd(e.text):'')+`<p>${code==='rate_limited'?'Too many questions in a short time. Wait a minute and ask again.':code==='session_expired'?'You have been signed out of Claude. Sign in again, then ask.':code==='refused'?'The agent could not answer that one. Try asking it a different way.':'Something went wrong getting an answer. Try asking again.'}</p>`}
+  }finally{dgSetBusy(false);dgCtl=null}
+}
+$('dgChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c)dgAsk(c.dataset.q)});
+$('dgForm').addEventListener('submit',e=>{e.preventDefault();dgAsk($('dgInput').value)});
+$('dgStop').addEventListener('click',()=>dgCtl?.abort());
+$('dgClear').addEventListener('click',()=>{if(dgBusy)dgCtl?.abort();dgTurns=[];$('dgLog').innerHTML='';$('dgClear').hidden=true});
 
 /* ---------- Start ---------- */
 $('dropName').value=S.drop;
