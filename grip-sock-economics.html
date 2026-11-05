@@ -1,258 +1,315 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Grip Sock Economics</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
 <style>
-/* Layout: one calm column of white cloud cards — summary first (KPIs), then inputs, then the detail sections in the order you check them. */
+/* Layout: one friendly column on cream. Each topic has its own pastel (sky = selling, pink = costs, lavender = ads,
+   mint = profit, peach = stock, butter = tips), so the eye learns the page by colour. Deliberately light-only. */
 :root{
-  --bg:#F8FAFC; --card:#FFFFFF; --sky:#A7C7E7; --sky-soft:#EAF2FA; --accent:#4A7BA7;
-  --ink:#2D3748; --muted:#718096; --line:#E7EDF4; --field:#F3F7FB;
-  --good:#7FB685; --warn:#E8B86D; --bad:#D98880;
-  --good-soft:#EAF4EB; --warn-soft:#FBF2E2; --bad-soft:#F8E9E8;
-  --shadow:0 1px 2px rgba(45,55,72,.04),0 8px 24px rgba(74,123,167,.07);
-  --font:"DM Sans",ui-rounded,"SF Pro Rounded",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --r:18px;
+  color-scheme:light;
+  --bg:#FFFBF5; --card:#FFFFFF; --ink:#2D3748; --muted:#5F6B7A; --line:#F0E8DC; --field:#FFFFFF;
+  --sky:#BDE0FE; --pink:#FFC8DD; --lav:#CDB4DB; --mint:#B9FBC0; --peach:#FFD6A5; --butter:#FDFFB6;
+  --sky-t:#EEF7FF; --pink-t:#FFF1F6; --lav-t:#F6F0FA; --mint-t:#EFFFF1; --peach-t:#FFF5E9; --butter-t:#FEFFE8;
+  --sky-i:#2B679C; --pink-i:#A8335F; --lav-i:#6E4590; --mint-i:#23703B; --peach-i:#8E4E12;
+  --red-t:#FFE3E3; --accent:#5B8DC9;
+  --shadow:0 2px 6px rgba(120,90,60,.05),0 10px 30px rgba(120,90,60,.07);
+  --font:"Nunito",ui-rounded,"SF Pro Rounded","Trebuchet MS",system-ui,sans-serif;
+  --r:22px;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0E151D; --card:#151F2A; --sky:#5F87AE; --sky-soft:#1C2B3A; --accent:#8DB8E0;
-  --ink:#E4EBF3; --muted:#93A3B5; --line:#223140; --field:#1A2633;
-  --good-soft:#1D2C22; --warn-soft:#30291C; --bad-soft:#33201F;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0E151D; --card:#151F2A; --sky:#5F87AE; --sky-soft:#1C2B3A; --accent:#8DB8E0;
-  --ink:#E4EBF3; --muted:#93A3B5; --line:#223140; --field:#1A2633;
-  --good-soft:#1D2C22; --warn-soft:#30291C; --bad-soft:#33201F;
-  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25); color-scheme:dark}
-
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
-.wrap{max-width:1240px;margin:0 auto;padding-block:20px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:28px}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-block:20px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:40px}
 h1,h2,h3{margin:0;text-wrap:balance}
-h2{font-size:20px;font-weight:600;letter-spacing:-.01em}
-h3{font-size:15px;font-weight:600}
+h2{font-size:24px;font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}
+h3{font-size:17px;font-weight:800}
+p{margin:0}
 .num{font-variant-numeric:tabular-nums}
 .muted{color:var(--muted)}
+.sec{display:flex;flex-direction:column;gap:16px}
 .card{background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);padding:24px}
-.sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-.sec-head p{margin:2px 0 0;color:var(--muted);font-size:14px}
 button{font:inherit;color:inherit;cursor:pointer}
-:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:10px}
 
 /* Header */
-.hero{position:relative;overflow:hidden;border-radius:24px;background:linear-gradient(160deg,var(--sky-soft),var(--card) 70%);box-shadow:var(--shadow);padding:28px 28px 24px}
-.hero canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.hero-in{position:relative;display:flex;flex-wrap:wrap;gap:18px 28px;align-items:flex-end;justify-content:space-between}
-.brand{display:flex;gap:14px;align-items:center;min-width:0}
-.brand svg{flex:none}
-.brand h1{font-size:26px;font-weight:700;letter-spacing:-.02em}
-.drop{display:flex;align-items:center;gap:6px;margin-top:2px;color:var(--muted);font-size:14px}
-.drop input{font:inherit;color:var(--ink);background:transparent;border:0;border-bottom:1px dashed var(--sky);padding:2px 2px;min-width:0;width:220px}
+.top{position:relative;display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:8px 4px 0}
+.top h1{font-size:30px;font-weight:900;letter-spacing:-.02em}
+.drop{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:15px;margin-top:2px}
+.drop input{font:inherit;font-weight:700;color:var(--ink);background:transparent;border:0;border-bottom:2px dashed var(--sky);padding:2px;min-width:0;width:220px}
 .drop input:focus{outline:none;border-bottom-color:var(--accent)}
-.hero-ctl{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.pills{display:inline-flex;background:var(--card);border-radius:999px;padding:4px;box-shadow:var(--shadow)}
-.pills button{border:0;background:transparent;border-radius:999px;padding:8px 16px;font-weight:500;color:var(--muted);transition:.2s}
-.pills button[aria-pressed="true"]{background:var(--accent);color:#fff}
-:root[data-theme="dark"] .pills button[aria-pressed="true"]{color:#0E151D}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pills button[aria-pressed="true"]{color:#0E151D}}
-.icon-btn{border:0;background:var(--card);box-shadow:var(--shadow);width:38px;height:38px;border-radius:50%;display:grid;place-items:center}
-.save{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
-.save i{width:7px;height:7px;border-radius:50%;background:var(--good)}
-.scn-note{position:relative;margin-top:14px;font-size:13px;color:var(--muted)}
+.save{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px;background:var(--card);border-radius:999px;padding:6px 12px;box-shadow:var(--shadow)}
+.save i{width:8px;height:8px;border-radius:50%;background:#5DBB6E}
+.cloud{position:absolute;pointer-events:none;opacity:.55;font-size:28px;line-height:1}
 
-/* KPIs */
-.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
-.kpi{display:flex;flex-direction:column;gap:6px;padding:20px}
-.kpi .lab{font-size:12px;font-weight:500;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;display:flex;align-items:center;gap:4px}
-.kpi .val{font-size:32px;font-weight:700;letter-spacing:-.02em;color:var(--accent);line-height:1.1}
-.kpi .why{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--muted);line-height:1.4}
-.dot{flex:none;width:9px;height:9px;border-radius:50%;margin-top:5px;background:var(--muted)}
-.dot.good{background:var(--good)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--bad)}
+/* Big answer */
+.answer{position:relative;overflow:hidden;border-radius:28px;padding:32px 32px 28px;display:flex;gap:20px;align-items:center;box-shadow:var(--shadow);transition:background .4s}
+.answer.good{background:var(--mint)}.answer.warn{background:var(--butter)}.answer.bad{background:var(--red-t)}
+.answer .face{font-size:56px;line-height:1;flex:none}
+.answer h2{font-size:28px;font-weight:900;line-height:1.25;display:block}
+.answer p{font-size:16px;margin-top:8px;color:#3B4656}
+.answer .c1{position:absolute;right:28px;top:14px;font-size:40px;opacity:.6}
+.answer .c2{position:absolute;right:90px;bottom:10px;font-size:26px;opacity:.5}
 
-/* Advisor */
-.adv{display:flex;flex-direction:column;gap:16px}
-.adv-head{display:flex;gap:14px;align-items:flex-start}
-.adv-head p{margin:4px 0 0;color:var(--muted);font-size:14px;max-width:80ch}
-.adv-avatar{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--sky-soft);color:var(--accent)}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:500;color:var(--ink);transition:background .15s,border-color .15s}
-.chip:hover{background:var(--sky-soft);border-color:var(--sky)}
-.chip:disabled,.adv-form button:disabled{opacity:.5;cursor:default}
-.adv-log{display:flex;flex-direction:column;gap:12px}
-.adv-log:empty{display:none}
-.bub{max-width:min(78ch,100%);border-radius:16px;padding:12px 16px;font-size:14.5px;line-height:1.55;overflow-wrap:anywhere}
-.bub.me{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:6px}
-:root[data-theme="dark"] .bub.me{color:#0E151D}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bub.me{color:#0E151D}}
-.bub.ai{align-self:flex-start;background:var(--field);border-bottom-left-radius:6px}
-.bub.ai p{margin:0 0 8px}.bub.ai p:last-child{margin:0}
-.bub.ai ul{margin:4px 0 8px;padding-left:20px;display:flex;flex-direction:column;gap:6px}
-.bub.ai.wait{color:var(--muted)}
-.bub.err{background:var(--bad-soft)}
-.adv-form{display:flex;gap:8px}
-.adv-form input{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--field);border:0;border-radius:12px;padding:0 14px;height:44px}
-.adv-form input:focus{outline:2px solid var(--sky)}
-.btn.primary{background:var(--accent);color:#fff}
-:root[data-theme="dark"] .btn.primary{color:#0E151D}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#0E151D}}
-.adv-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
-.linkbtn{border:0;background:none;padding:0;color:var(--accent);font-size:12px;text-decoration:underline}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.adv-off{background:var(--field);border-radius:12px;padding:14px 16px;font-size:14px;color:var(--muted)}
-.adv-off a{color:var(--accent)}
+/* Key cards */
+.keys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.key{border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:6px;box-shadow:var(--shadow)}
+.key .ic{font-size:28px;line-height:1}
+.key .lab{font-size:15px;font-weight:700}
+.key .val{font-size:clamp(26px,3.1vw,38px);font-weight:900;letter-spacing:-.02em;line-height:1.1;white-space:nowrap}
+.key .why{font-size:14px;color:#46505E;line-height:1.4}
+.t-sky{background:var(--sky-t)}.t-sky .val{color:var(--sky-i)}
+.t-pink{background:var(--pink-t)}.t-pink .val{color:var(--pink-i)}
+.t-mint{background:var(--mint-t)}.t-mint .val{color:var(--mint-i)}
+
+/* Show more */
+details.more{background:var(--card);border-radius:18px;box-shadow:var(--shadow)}
+details.more>summary{list-style:none;cursor:pointer;padding:14px 20px;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--ink)}
+details.more>summary::-webkit-details-marker{display:none}
+details.more>summary .chev{transition:transform .2s;color:var(--muted)}
+details.more[open]>summary .chev{transform:rotate(180deg)}
+details.more .in{padding:0 20px 20px}
+details.inner{border-top:1px dashed rgba(0,0,0,.1);margin-top:2px}
+details.inner>summary{list-style:none;cursor:pointer;padding:12px 0 4px;font-weight:800;font-size:14px;color:var(--muted);display:flex;gap:6px;align-items:center}
+details.inner>summary::-webkit-details-marker{display:none}
+details.inner>summary::before{content:"▸";transition:transform .2s;display:inline-block}
+details.inner[open]>summary::before{transform:rotate(90deg)}
+details.inner .in{display:flex;flex-direction:column;gap:14px;padding:10px 0 2px}
+.minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mini{background:var(--bg);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:2px}
+.mini b{font-size:22px;font-weight:900}
+.mini small{font-size:13px;color:var(--muted);line-height:1.35}
+.mini .l{font-size:14px;font-weight:700}
+
+/* Form */
+.strip{display:flex;flex-wrap:wrap;gap:16px;background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:16px 20px}
+.strip .field{flex:1 1 240px}
+.groups{columns:2 420px;column-gap:16px}
+.grp{break-inside:avoid;border-radius:var(--r);padding:20px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.grp-h{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.grp-h .tag{font-size:13px;font-weight:800;border-radius:999px;padding:4px 12px}
+.grp-h h3{font-size:18px}
+.g-sky{background:var(--sky-t)}.g-sky .tag{background:var(--sky)}
+.g-pink{background:var(--pink-t)}.g-pink .tag{background:var(--pink)}
+.g-lav{background:var(--lav-t)}.g-lav .tag{background:var(--lav)}
+.g-peach{background:var(--peach-t)}.g-peach .tag{background:var(--peach)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.changed .box{box-shadow:0 0 0 2px var(--accent)}
+.field label{font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px}
+.row{display:flex;gap:10px;align-items:center}
+.box{display:flex;align-items:center;background:var(--field);border-radius:12px;padding:0 12px;height:44px;min-width:0;flex:1;box-shadow:inset 0 0 0 1.5px var(--line)}
+.box span{color:var(--muted);font-size:14px;white-space:nowrap}
+.box input{font:inherit;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);background:transparent;border:0;width:100%;min-width:0;padding:0 6px;height:100%}
+.box input:focus{outline:none}
+.box:focus-within{box-shadow:0 0 0 2px var(--accent)}
+.row.sl .box{flex:0 0 120px}
+input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:28px}
+.conv{flex:1;min-width:0;display:flex;align-items:center;height:44px;padding:0 12px;border-radius:12px;background:rgba(255,255,255,.6);font-size:14px;color:var(--muted);white-space:nowrap;gap:6px}
+.conv b{color:var(--ink);font-size:16px}
+.toggle{display:inline-flex;flex-wrap:wrap;background:rgba(255,255,255,.7);border-radius:999px;padding:3px;align-self:flex-start}
+.toggle button{border:0;background:transparent;padding:6px 14px;border-radius:999px;font-size:14px;font-weight:700;color:var(--muted)}
+.toggle button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.note{font-size:13.5px;color:#46505E;background:rgba(255,255,255,.65);border-radius:12px;padding:10px 12px;line-height:1.45}
+.note b{color:var(--ink)}
+.list{display:flex;flex-direction:column;gap:8px}
+.list-row{display:grid;grid-template-columns:minmax(0,1fr) 130px 34px;gap:8px;align-items:center}
+.list-row .box{flex:auto}
+.list-row .box input{font-weight:600}
+.x{border:0;background:transparent;color:var(--muted);font-size:20px;width:34px;height:34px;border-radius:10px}
+.x:hover{background:rgba(255,255,255,.8)}
+.add{border:2px dashed rgba(0,0,0,.12);background:rgba(255,255,255,.5);border-radius:12px;padding:8px 14px;font-size:14px;font-weight:800;color:var(--ink)}
+.total{font-size:14px;color:var(--muted)}
+.total b{color:var(--ink);font-size:16px}
+.btn{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:800}
+.btn.warnbtn{background:var(--pink)}
+.btn.primary{background:var(--lav-i);color:#fff;box-shadow:none}
+.sec-h{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
 
 /* Tooltips */
-.tip{border:0;background:transparent;padding:0 2px;color:var(--muted);font-size:12px;line-height:1;position:relative;text-transform:none;letter-spacing:0;cursor:help}
-.tip::after{content:attr(data-tip);position:absolute;z-index:20;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(250px,70vw);background:var(--ink);color:var(--bg);font-size:12px;font-weight:400;line-height:1.45;padding:8px 10px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .15s;white-space:normal;text-align:left}
+.tip{border:0;background:rgba(0,0,0,.07);width:20px;height:20px;border-radius:50%;padding:0;font-size:12px;font-weight:900;color:var(--muted);line-height:20px;position:relative;cursor:help;flex:none}
+.tip::after{content:attr(data-tip);position:absolute;z-index:30;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(260px,70vw);background:var(--ink);color:#fff;font-size:13px;font-weight:600;line-height:1.45;padding:9px 11px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .15s;white-space:normal;text-align:left}
 .tip:hover::after,.tip:focus::after{opacity:1}
 
-/* Inputs */
-.inputs-top{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px}
-.inputs-top .field{flex:1 1 220px}
-.grid-sections{columns:3 320px;column-gap:16px}
-details.sect{break-inside:avoid;background:var(--card);border-radius:var(--r);box-shadow:var(--shadow);margin-bottom:16px;padding:0 20px}
-details.sect summary{list-style:none;cursor:pointer;padding:16px 0;display:flex;justify-content:space-between;align-items:center;font-weight:600}
-details.sect summary::-webkit-details-marker{display:none}
-details.sect summary .chev{transition:transform .2s;color:var(--muted)}
-details.sect[open] summary .chev{transform:rotate(180deg)}
-.sect-body{display:flex;flex-direction:column;gap:14px;padding-bottom:20px}
-.field{display:flex;flex-direction:column;gap:6px;border-radius:12px;padding:6px 8px;margin:-6px -8px;transition:background .3s}
-.field.changed{background:var(--sky-soft)}
-.field label,.field .flab{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:4px}
-.field.changed label::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:2px}
-.row{display:flex;gap:10px;align-items:center}
-.box{display:flex;align-items:center;background:var(--field);border-radius:10px;padding:0 10px;height:38px;min-width:0;flex:1}
-.box span{color:var(--muted);font-size:13px;white-space:nowrap}
-.box input{font:inherit;font-variant-numeric:tabular-nums;color:var(--ink);background:transparent;border:0;width:100%;min-width:0;padding:0 4px;height:100%}
-.box input:focus{outline:none}
-.box:focus-within{box-shadow:0 0 0 2px var(--sky)}
-.row.sl .box{flex:0 0 112px}
-input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:24px}
-.toggle{display:inline-flex;background:var(--field);border-radius:999px;padding:3px}
-.toggle button{border:0;background:transparent;padding:6px 12px;border-radius:999px;font-size:13px;color:var(--muted)}
-.toggle button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
-.conv{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:10px;background:var(--sky-soft);font-size:13px;color:var(--muted);white-space:nowrap}
-.conv b{color:var(--ink);font-weight:600;font-size:15px}
-.derived{font-size:13px;color:var(--muted);background:var(--field);border-radius:10px;padding:8px 10px}
-.derived b{color:var(--ink);font-weight:600}
-.list{display:flex;flex-direction:column;gap:8px}
-.list-row{display:grid;grid-template-columns:minmax(0,1fr) 120px 30px;gap:8px;align-items:center}
-.list-row .box{flex:auto}
-.x{border:0;background:transparent;color:var(--muted);font-size:18px;width:30px;height:30px;border-radius:8px}
-.x:hover{background:var(--field)}
-.ghost{border:1px dashed var(--sky);background:transparent;border-radius:10px;padding:8px 12px;color:var(--accent);font-size:13px;font-weight:500}
-.btn{border:0;background:var(--field);border-radius:999px;padding:9px 16px;font-size:13px;font-weight:500}
-.btn.danger{background:var(--bad-soft);color:var(--ink)}
-.total{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);padding-top:4px}
-.total b{color:var(--ink)}
-
-/* Waterfall & tables */
-.split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.wf-card{padding:20px}
-.wf-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
-.wf-head .big{font-size:22px;font-weight:700;color:var(--accent)}
-svg text{font-family:var(--font)}
-.tbl-wrap{overflow-x:auto;margin-top:16px;-webkit-overflow-scrolling:touch}
-table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:14px}
-th,td{padding:10px 12px;text-align:right;white-space:nowrap}
-th:first-child,td:first-child{text-align:left}
-thead th{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--line)}
-tbody tr+tr td{border-top:1px solid var(--line)}
-tr.em td{font-weight:600}
-td.hl,th.hl{background:var(--sky-soft)}
-.takeaways{margin-top:18px;display:flex;flex-direction:column;gap:8px;max-width:78ch}
-.takeaways h3{font-size:13px;color:var(--muted);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
-.takeaways ul{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px}
-.takeaways li{display:flex;gap:10px;font-size:14px}
-.takeaways li .dot{margin-top:7px}
-.be-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px}
-.be-strip div{background:var(--field);border-radius:12px;padding:12px 14px}
-.be-strip small{display:block;color:var(--muted);font-size:12px}
-.be-strip b{font-size:18px}
+/* Donut */
+.donut-card{display:grid;grid-template-columns:280px minmax(0,1fr);gap:28px;align-items:center}
+.donut{position:relative;width:100%;max-width:280px;aspect-ratio:1;margin:0 auto}
+.donut svg{width:100%;height:100%;transform:rotate(-90deg)}
+.donut .mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.donut .mid small{font-size:14px;color:var(--muted);font-weight:700}
+.donut .mid b{font-size:34px;font-weight:900;color:var(--mint-i)}
+.legend{display:flex;flex-direction:column}
+.leg{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:15px;padding:8px 0;border-bottom:1px dashed var(--line)}
+.leg:last-child{border-bottom:0}
+.leg i{width:18px;height:18px;border-radius:6px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.leg b{font-weight:800}
+.leg.keep{font-weight:800;color:var(--mint-i)}
+.caption{font-size:20px;font-weight:900;margin-top:14px}
 
 /* Chart */
 .chart{position:relative;width:100%}
 .chart svg{display:block;width:100%;height:auto;overflow:visible}
-.ctip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:12px;padding:8px 10px;border-radius:10px;white-space:nowrap;transform:translate(-50%,-110%);opacity:0;transition:opacity .12s}
-.recover{display:inline-flex;align-items:center;gap:8px;background:var(--sky-soft);color:var(--ink);border-radius:999px;padding:6px 14px;font-size:14px;font-weight:500}
+.chart svg text{font-family:var(--font)}
+.ctip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:13px;font-weight:600;padding:8px 11px;border-radius:12px;white-space:nowrap;transform:translate(-50%,-115%);opacity:0;transition:opacity .12s}
+.pill{display:inline-flex;align-items:center;gap:8px;border-radius:999px;padding:8px 16px;font-size:15px;font-weight:800}
 
-/* Tracker */
-.trk input{font:inherit;font-variant-numeric:tabular-nums;width:86px;text-align:right;background:var(--field);border:0;border-radius:8px;padding:6px 8px;color:var(--ink)}
-.trk input:focus{outline:2px solid var(--sky)}
-.trk td.plan{color:var(--muted)}
-.var{font-size:12px;font-weight:600;border-radius:999px;padding:3px 8px;display:inline-block;min-width:54px;text-align:center}
-.var.good{background:var(--good-soft);color:var(--ink)}
-.var.bad{background:var(--bad-soft);color:var(--ink)}
-.var.none{color:var(--muted)}
-.trk th.grp{text-align:center;border-bottom:0;padding-bottom:0;color:var(--ink)}
-.trk td.sep,.trk th.sep{border-left:1px solid var(--line)}
-.ex-badge{display:inline-flex;gap:8px;align-items:center;background:var(--warn-soft);border-radius:999px;padding:5px 6px 5px 12px;font-size:13px}
-.ex-badge button{border:0;background:var(--card);border-radius:999px;padding:3px 10px;font-size:12px}
+/* What if */
+.whatif{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.wi{border-radius:var(--r);padding:22px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px}
+.wi .face{font-size:40px;line-height:1}
+.wi h3{font-size:19px}
+.wi .desc{font-size:14px;color:#46505E;min-height:2.8em}
+.wi .stat{background:rgba(255,255,255,.75);border-radius:14px;padding:12px 14px}
+.wi .stat small{display:block;font-size:13px;color:var(--muted);font-weight:700}
+.wi .stat b{font-size:26px;font-weight:900}
+.wi.bad{background:var(--pink-t)}.wi.mid{background:var(--sky-t)}.wi.great{background:var(--mint-t)}
 
-@media (max-width:1100px){.kpis{grid-template-columns:repeat(6,minmax(0,1fr))}.kpi{grid-column:span 2}.kpi:nth-child(n+4){grid-column:span 3}}
-@media (max-width:760px){
-  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.kpi,.kpi:nth-child(n+4){grid-column:auto}.kpi:last-child{grid-column:1/-1}
-  .split{grid-template-columns:minmax(0,1fr)}
-  .be-strip{grid-template-columns:minmax(0,1fr)}
-  .hero{padding:22px 18px}
-  .brand h1{font-size:22px}
-}
-@media (max-width:480px){.kpis{grid-template-columns:minmax(0,1fr)} .kpi:last-child{grid-column:auto} .kpi .val{font-size:30px}}
+/* Check-in */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:15px}
+th,td{padding:10px;text-align:left;white-space:nowrap;vertical-align:top}
+thead th{font-size:13px;font-weight:800;color:var(--muted);border-bottom:2px solid var(--line)}
+tbody tr+tr td{border-top:1px solid var(--line)}
+.ck{display:flex;align-items:center;gap:8px}
+.ck input{font:inherit;font-weight:700;width:100px;text-align:right;background:var(--bg);border:0;box-shadow:inset 0 0 0 1.5px var(--line);border-radius:10px;padding:7px 9px;color:var(--ink)}
+.ck input:focus{outline:2px solid var(--accent)}
+.ck .st{width:22px;text-align:center}
+.plan{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+.ex-badge{display:inline-flex;gap:8px;align-items:center;background:var(--butter);border-radius:999px;padding:5px 6px 5px 14px;font-size:14px;font-weight:700}
+.ex-badge button{border:0;background:var(--card);border-radius:999px;padding:4px 12px;font-size:13px;font-weight:800}
+.friendly{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.friendly p{background:var(--butter-t);border-radius:14px;padding:12px 14px;font-size:15px}
+
+/* Tips */
+.tips{background:var(--butter);border-radius:28px;padding:28px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:14px}
+.tips ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tips li{background:rgba(255,255,255,.75);border-radius:16px;padding:14px 16px;display:flex;gap:12px;font-size:15px;line-height:1.45}
+.tips li .e{font-size:22px;line-height:1.1;flex:none}
+
+/* Advisor */
+.adv{display:flex;flex-direction:column;gap:16px;background:var(--lav-t)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:0;background:var(--card);border-radius:999px;padding:9px 15px;font-size:14px;font-weight:700;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.chip:hover{background:var(--lav)}
+.chip:disabled,.adv-form button:disabled{opacity:.5;cursor:default}
+.adv-log{display:flex;flex-direction:column;gap:12px}
+.adv-log:empty{display:none}
+.bub{max-width:min(78ch,100%);border-radius:18px;padding:12px 16px;font-size:15px;line-height:1.55;overflow-wrap:anywhere}
+.bub.me{align-self:flex-end;background:var(--lav-i);color:#fff;border-bottom-right-radius:6px}
+.bub.ai{align-self:flex-start;background:var(--card);border-bottom-left-radius:6px}
+.bub.ai p{margin:0 0 8px}.bub.ai p:last-child{margin:0}
+.bub.ai ul{margin:4px 0 8px;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.bub.ai.wait{color:var(--muted)}
+.bub.err{background:var(--red-t)}
+.adv-form{display:flex;gap:8px}
+.adv-form input{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--card);border:0;border-radius:14px;padding:0 14px;height:46px;box-shadow:inset 0 0 0 1.5px var(--line)}
+.adv-form input:focus{outline:2px solid var(--accent)}
+.adv-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+.linkbtn{border:0;background:none;padding:0;color:var(--lav-i);font-size:13px;font-weight:700;text-decoration:underline}
+.adv-off{background:rgba(255,255,255,.7);border-radius:14px;padding:14px 16px;font-size:15px;color:var(--ink)}
+.adv-off a{color:var(--lav-i);font-weight:800}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+@media (max-width:900px){.keys{grid-template-columns:repeat(2,minmax(0,1fr))}.minis{grid-template-columns:repeat(2,minmax(0,1fr))}.donut-card{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:720px){.whatif{grid-template-columns:minmax(0,1fr)}.tips ul{grid-template-columns:minmax(0,1fr)}.answer{flex-direction:column;align-items:flex-start;padding:24px 20px}.answer h2{font-size:23px}}
+@media (max-width:480px){.cloud,.answer .c2{display:none}.keys{grid-template-columns:minmax(0,1fr)}.minis{grid-template-columns:minmax(0,1fr)}.key .val{font-size:34px}.top h1{font-size:25px}.list-row{grid-template-columns:minmax(0,1fr) 110px 34px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
 <div class="wrap">
-  <!-- 1. Header -->
-  <header class="hero">
-    <canvas id="clouds" aria-hidden="true"></canvas>
-    <div class="hero-in">
-      <div class="brand">
-        <svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true">
-          <circle cx="23" cy="23" r="23" fill="var(--card)"/>
-          <path d="M14 28.5a5 5 0 0 1 .9-9.9 7 7 0 0 1 13.4-1.4 5.6 5.6 0 0 1 3.6 10.6" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round"/>
-          <path d="M15 31c3-.4 5.4-1.6 7.4-3.6M19 33.5c2.6-.6 4.8-1.8 6.6-3.8M23.5 35.4c2-.7 3.7-1.8 5-3.4" fill="none" stroke="var(--sky)" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        <div style="min-width:0">
-          <h1>Grip Sock Economics</h1>
-          <div class="drop"><span>Current drop</span><input id="dropName" aria-label="Current drop name" value="Drop 01 · Cloud Grip"></div>
-        </div>
-      </div>
-      <div class="hero-ctl">
-        <div class="pills" role="group" aria-label="Scenario">
-          <button data-scn="worst" aria-pressed="false">Slow sales</button>
-          <button data-scn="base" aria-pressed="true">Expected</button>
-          <button data-scn="best" aria-pressed="false">Great sales</button>
-        </div>
-        <button class="icon-btn" id="themeBtn" aria-label="Toggle dark mode" title="Toggle dark mode">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
-        </button>
-        <span class="save" id="saveState"><i></i><span>Saved</span></span>
-      </div>
+  <header class="top">
+    <span class="cloud" style="left:52%;top:0" aria-hidden="true">☁️</span>
+    <div>
+      <h1>🧦 My Grip Sock Money Plan</h1>
+      <div class="drop"><span>Current drop:</span><input id="dropName" aria-label="Current drop name" value="Drop 01 · Cloud Grip"></div>
     </div>
-    <div class="scn-note" id="scnNote"></div>
+    <span class="save" id="saveState"><i></i><span>Saved</span></span>
   </header>
 
-  <!-- 2. KPI strip -->
-  <section class="kpis" aria-label="Key numbers">
-    <div class="card kpi"><div class="lab">Profit <button class="tip" data-tip="What you have left after paying for everything: socks, packaging, delivery, platform fees, ads, website and launch costs. Socks you haven't sold yet aren't counted as a loss. Pros call this net profit.">ⓘ</button></div><div class="val num" id="k-profit">–</div><div class="why"><span class="dot" id="d-profit"></span><span id="w-profit"></span></div></div>
-    <div class="card kpi"><div class="lab">Return on your money <button class="tip" data-tip="Profit compared with the money you put in. 50% means you made RM 50 for every RM 100 you spent. Pros call this ROI.">ⓘ</button></div><div class="val num" id="k-roi">–</div><div class="why"><span class="dot" id="d-roi"></span><span id="w-roi"></span></div></div>
-    <div class="card kpi"><div class="lab">Ads must bring in <button class="tip" data-tip="The least each RM 1 of ads has to bring back in sales so you don't lose money on those orders. Pros call this break-even ROAS.">ⓘ</button></div><div class="val num" id="k-roas">–</div><div class="why"><span class="dot" id="d-roas"></span><span id="w-roas"></span></div></div>
-    <div class="card kpi"><div class="lab">Money back in <button class="tip" data-tip="How long until sales have paid back what you spent on stock and launch, so your bank balance is back where it started. Pros call this the payback period.">ⓘ</button></div><div class="val num" id="k-pay">–</div><div class="why"><span class="dot" id="d-pay"></span><span id="w-pay"></span></div></div>
-    <div class="card kpi"><div class="lab">Money in the bank <button class="tip" data-tip="What your bank balance should be at the end: your starting cash, minus what you paid for stock and launch, plus what sales bring in after ads and monthly bills.">ⓘ</button></div><div class="val num" id="k-cash">–</div><div class="why"><span class="dot" id="d-cash"></span><span id="w-cash"></span></div></div>
+  <!-- 1. The big answer -->
+  <section class="answer warn" id="answer" aria-live="polite">
+    <span class="c1" aria-hidden="true">☁️</span><span class="c2" aria-hidden="true">☁️</span>
+    <div class="face" id="ansFace" aria-hidden="true">🙂</div>
+    <div style="min-width:0;position:relative"><h2 id="ansTitle">Working it out…</h2><p id="ansSub"></p></div>
   </section>
 
-  <!-- 2b. Advisor -->
-  <section class="card adv" aria-labelledby="h-adv">
-    <div class="adv-head">
-      <div class="adv-avatar" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg></div>
-      <div style="min-width:0"><h2 id="h-adv">Ask your advisor</h2><p>A sales and marketing expert for Malaysian online brands reads the numbers on this page and tells you what looks reasonable, what looks risky, and what to do next. Change a number and ask again to see how the advice changes.</p></div>
+  <!-- 2. Key numbers -->
+  <section class="sec" aria-labelledby="h-keys">
+    <h2 id="h-keys">⭐ My 4 key numbers</h2>
+    <div class="keys">
+      <div class="key t-pink"><span class="ic" aria-hidden="true">💰</span><span class="lab">Money I need to start</span><span class="val num" id="k-need">–</span><span class="why" id="w-need"></span></div>
+      <div class="key t-mint"><span class="ic" aria-hidden="true">🧦</span><span class="lab">How much I keep per pair</span><span class="val num" id="k-keep">–</span><span class="why" id="w-keep"></span></div>
+      <div class="key t-sky"><span class="ic" aria-hidden="true">📅</span><span class="lab">When I get my money back</span><span class="val num" id="k-back">–</span><span class="why" id="w-back"></span></div>
+      <div class="key t-mint"><span class="ic" aria-hidden="true">📈</span><span class="lab" id="l-profit">Total profit</span><span class="val num" id="k-profit">–</span><span class="why" id="w-profit"></span></div>
     </div>
+    <details class="more">
+      <summary>Show more numbers <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="in"><div class="minis" id="minis"></div></div>
+    </details>
+  </section>
+
+  <!-- 3. Inputs -->
+  <section class="sec" aria-labelledby="h-form">
+    <div class="sec-h">
+      <div><h2 id="h-form">✏️ Fill in my numbers</h2><p class="muted" style="margin-top:4px">These start as example numbers. Type over them and everything updates. Boxes you've changed get a blue outline.</p></div>
+      <button class="btn" id="resetBtn" type="button">↺ Reset to example numbers</button>
+    </div>
+    <div class="strip" id="strip"></div>
+    <div class="groups" id="groups"></div>
+  </section>
+
+  <!-- 4. Donut -->
+  <section class="sec" aria-labelledby="h-donut">
+    <div class="sec-h"><h2 id="h-donut">🍩 Where does my RM go?</h2>
+      <div class="toggle" role="group" aria-label="Show for"><button type="button" data-dn="1" aria-pressed="true">1 pair</button><button type="button" data-dn="2" aria-pressed="false">2-pair bundle (per pair)</button></div></div>
+    <div class="card">
+      <div class="donut-card">
+        <div class="donut"><div id="donutSvg" style="width:100%;height:100%"></div><div class="mid"><small>I keep</small><b class="num" id="dnKeep">–</b></div></div>
+        <div><div class="legend" id="legend"></div><p class="caption" id="dnCaption"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Money over time -->
+  <section class="sec" aria-labelledby="h-chart">
+    <div class="sec-h"><div><h2 id="h-chart">📈 My money over time</h2><p class="muted" style="margin-top:4px">Below zero (pink) is money you've spent and not got back yet. Once the line crosses zero, you've got it all back.</p></div><span class="pill" id="backPill"></span></div>
+    <div class="card"><div class="chart" id="chart"><div class="ctip" id="ctip"></div></div></div>
+  </section>
+
+  <!-- 6. What if -->
+  <section class="sec" aria-labelledby="h-wi">
+    <h2 id="h-wi">🔮 What if?</h2>
+    <div class="whatif" id="whatif"></div>
+    <details class="more">
+      <summary>Change how bad or great it gets <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></summary>
+      <div class="in" id="wiSettings"></div>
+    </details>
+  </section>
+
+  <!-- 7. Check-in -->
+  <section class="sec" aria-labelledby="h-ck">
+    <div class="sec-h"><div><h2 id="h-ck">✅ My monthly check-in</h2><p class="muted" style="margin-top:4px">At the end of each month, type what really happened. ✅ means you beat your plan, ❌ means you're behind.</p></div><span id="exBadge"></span></div>
+    <div class="card">
+      <div class="tbl-wrap"><table id="ckTbl"></table></div>
+      <div class="friendly" id="ckTips"></div>
+    </div>
+  </section>
+
+  <!-- 8. Tips -->
+  <section class="tips" aria-labelledby="h-tips">
+    <h2 id="h-tips">💡 Beginner tips</h2>
+    <ul id="tips"></ul>
+  </section>
+
+  <!-- 9. Advisor -->
+  <section class="card adv" aria-labelledby="h-adv">
+    <div><h2 id="h-adv">💬 Ask an expert</h2><p class="muted" style="margin-top:4px">A sales and marketing expert for Malaysian online shops reads your numbers and tells you what looks fine, what looks risky, and what to do next.</p></div>
     <div class="chips" id="advChips">
       <button type="button" class="chip" data-q="Give me a full review of my plan. What looks reasonable, what looks risky, and what should I fix first?">Review my whole plan</button>
-      <button type="button" class="chip" data-q="Is my ad budget and my expected ad cost per order reasonable for a grip sock brand in Malaysia? What should I expect in the first month?">Is my ad cost reasonable?</button>
-      <button type="button" class="chip" data-q="Are my startup costs reasonable? Look at my stock order, launch costs and monthly bills. Am I spending too much or too little anywhere?">Are my startup costs reasonable?</button>
-      <button type="button" class="chip" data-q="Is my price right for Pilates grip socks in Malaysia? Are my bundle prices set well?">Is my price right?</button>
-      <button type="button" class="chip" data-q="How should I split sales between my own website, Shopee and TikTok Shop when I launch?">Website, Shopee or TikTok?</button>
+      <button type="button" class="chip" data-q="Is my ad budget and my ad cost to get 1 order reasonable for a grip sock brand in Malaysia? What should I expect in the first month?">Is my ad cost reasonable?</button>
+      <button type="button" class="chip" data-q="Are my start-up costs reasonable? Look at my stock order, start-up costs and monthly bills. Am I spending too much or too little anywhere?">Are my start-up costs reasonable?</button>
+      <button type="button" class="chip" data-q="Is my price right for Pilates grip socks in Malaysia? Is my bundle price set well?">Is my price right?</button>
+      <button type="button" class="chip" data-q="Is selling my planned number of pairs per month realistic for a new brand? How should I split between my own website, Shopee and TikTok Shop?">Are my sales realistic?</button>
       <button type="button" class="chip" data-q="What are the first 5 things I should do in the next 30 days to launch this well?">What should I do first?</button>
     </div>
     <div class="adv-log" id="advLog" aria-live="polite"></div>
@@ -262,289 +319,185 @@ td.hl,th.hl{background:var(--sky-soft)}
       <button type="submit" class="btn primary" id="advSend">Ask</button>
       <button type="button" class="btn" id="advStop" hidden>Stop</button>
     </form>
-    <div class="adv-foot"><span id="advNote">Advice is a general guide based on what's typical for small online brands, not a guarantee. Each question uses your own Claude account.</span><button type="button" class="linkbtn" id="advClear" hidden>Start a new conversation</button></div>
-  </section>
-
-  <!-- 3. Inputs -->
-  <section aria-labelledby="h-inputs">
-    <div class="sec-head">
-      <div><h2 id="h-inputs">Your numbers</h2><p>Type over any number and the whole page updates. Anything you've changed turns light blue. Tap ⓘ to see what a box means.</p></div>
-      <div class="row"><button class="btn" id="resetBtn">Start over with the original numbers</button></div>
-    </div>
-    <div class="card inputs-top" id="topFields"></div>
-    <div class="grid-sections" id="sections"></div>
-  </section>
-
-  <!-- 4. Unit economics -->
-  <section aria-labelledby="h-unit">
-    <div class="sec-head"><div><h2 id="h-unit">Where the money from one order goes</h2><p>Start with what the customer pays, take away each cost, and the green bar is what you keep.</p></div></div>
-    <div class="split">
-      <div class="card wf-card"><div class="wf-head"><h3>Single pair</h3><span class="big num" id="wf1-keep"></span></div><div id="wf1"></div></div>
-      <div class="card wf-card"><div class="wf-head"><h3>Bundle</h3>
-        <div class="toggle" role="group" aria-label="Bundle size"><button data-b="2" aria-pressed="false">2-pair</button><button data-b="3" aria-pressed="true">3-pair</button></div>
-        <span class="big num" id="wf2-keep"></span></div><div id="wf2"></div></div>
-    </div>
-    <div class="card" style="margin-top:16px">
-      <h3>The same thing as a table</h3>
-      <div class="tbl-wrap"><table id="unitTbl"></table></div>
-      <div class="be-strip">
-        <div><small>Each RM 1 of ads must bring in at least</small><b class="num" id="be-roas"></b></div>
-        <div><small>Most you can pay in ads for one order and still not lose money</small><b class="num" id="be-cpa"></b></div>
-        <div><small>Same, but counting the orders that come without ads</small><b class="num" id="be-cpa2"></b></div>
-      </div>
-      <div class="takeaways"><h3>What this tells you</h3><ul id="tk-unit"></ul></div>
-    </div>
-  </section>
-
-  <!-- 5. Cash flow -->
-  <section aria-labelledby="h-cash">
-    <div class="sec-head"><div><h2 id="h-cash">Your bank balance, month by month</h2><p>"Start" is right after you pay for stock and launch. Once the line climbs back above the dashed line, you've got your money back.</p></div><span class="recover" id="recover"></span></div>
-    <div class="card">
-      <div class="chart" id="chart"><div class="ctip" id="ctip"></div></div>
-      <div class="be-strip">
-        <div><small>Total you put in (stock, launch, monthly bills)</small><b class="num" id="ti"></b></div>
-        <div><small>Pairs you must sell to cover all costs</small><b class="num" id="beu"></b></div>
-        <div><small>Month you start making a profit</small><b class="num" id="bem"></b></div>
-      </div>
-      <div class="takeaways"><h3>What this tells you</h3><ul id="tk-cash"></ul></div>
-    </div>
-  </section>
-
-  <!-- 6. Scenarios -->
-  <section aria-labelledby="h-scn">
-    <div class="sec-head"><div><h2 id="h-scn">If sales are slow, normal or great</h2><p id="scnDesc"></p></div></div>
-    <div class="card">
-      <div class="tbl-wrap" style="margin-top:0"><table id="scnTbl"></table></div>
-      <div class="takeaways"><h3>What this tells you</h3><ul id="tk-scn"></ul></div>
-    </div>
-  </section>
-
-  <!-- 7. Tracker -->
-  <section aria-labelledby="h-trk">
-    <div class="sec-head"><div><h2 id="h-trk">How you're really doing vs the plan</h2><p>At the end of each month, type in your real numbers. Green means better than planned, red means behind.</p></div><span id="exBadge"></span></div>
-    <div class="card">
-      <div class="tbl-wrap" style="margin-top:0"><table class="trk" id="trkTbl"></table></div>
-      <div class="takeaways"><h3>What this tells you</h3><ul id="tk-trk"></ul></div>
-    </div>
+    <div class="adv-foot"><span id="advNote">Advice is a general guide based on what's typical for small online shops, not a guarantee. Each question uses your own Claude account.</span><button type="button" class="linkbtn" id="advClear" hidden>Start a new conversation</button></div>
   </section>
 </div>
 
 <script>
-/* ---------- Defaults (example numbers: replace with your supplier quote) ---------- */
-const DEFAULTS = {
-  price1:70, price2:129, price3:179, bundlePct:35, threeShare:40,
-  unitCostRMB:5, fx:0.62, unitCost:3.1, freight:1.5, packaging:1.2, shipping:7, shipMode:'absorbed', gateway:2.5,
-  moqPerSize:250, sizes:4, sellThrough:70,
-  adBudget:2000, cpa:22, organic:30, cpaSwing:30, worstST:50, bestST:90,
-  shopeePct:35, tiktokPct:25, shopeeFee:18, tiktokFee:14,
-  months:6, capital:20000
+/* ---------- Example numbers ---------- */
+const D={
+  price1:70, price2:129, price3:179, bundlePct:35, threeShare:40, pairsPerMonth:150,
+  unitCostRMB:5, fx:0.62, freight:1.5, packaging:1.2, shipping:7, shipMode:'absorbed',
+  gateway:2.5, shopeePct:35, tiktokPct:25, shopeeFee:18, tiktokFee:14,
+  moq:1000, adBudget:2000, cpa:22, organic:30, months:6, savings:20000, swing:30
 };
-const DEF_LAUNCH = [{n:'Samples',v:600},{n:'Design & logo',v:800},{n:'Photoshoot',v:1500},{n:'Other',v:500}];
-const DEF_FIXED  = [{n:'Website (Shopify)',v:170},{n:'Domain',v:6},{n:'Apps & subscriptions',v:80},{n:'Other',v:100}];
-const EX_TRACK = {1:{orders:118,revenue:11350,ad:2080,units:174},2:{orders:133,revenue:12980,ad:1960,units:199}};
-const DV = 2; // bump when the default numbers change, so older saved example inputs get replaced
+const DEF_LAUNCH=[{n:'Samples',v:600},{n:'Design & logo',v:800},{n:'Photoshoot',v:1500},{n:'Other',v:500}];
+const DEF_FIXED=[{n:'Website (Shopify)',v:170},{n:'Domain',v:6},{n:'Apps & subscriptions',v:80},{n:'Other',v:100}];
+const EX_TRACK={1:{orders:92,revenue:8890,ad:1720},2:{orders:108,revenue:10650,ad:1580}};
+const DV=3;
+const clone=o=>JSON.parse(JSON.stringify(o));
+
+/* Every input: label, unit, plain-English tip */
+const F={
+  months:{l:'Plan for how many months',u:'months',min:1,max:24,step:1,tip:'The page works out your sales and profit over this many months.'},
+  savings:{l:'Money I have saved for this',pre:'RM',min:0,step:500,tip:'Used to check you have enough to start. It does not change any other number.'},
+  price1:{l:'Price per pair',pre:'RM',slider:[20,150,1],tip:'What a customer pays for one pair.'},
+  price2:{l:'Bundle price (2 pairs)',pre:'RM',min:0,step:1,tip:'What a customer pays for 2 pairs together.'},
+  pairsPerMonth:{l:'Pairs I expect to sell per month',u:'pairs',slider:[10,1000,5],tip:'Your best guess of how many pairs you sell in a normal month, counting singles and bundles.'},
+  price3:{l:'Bundle price (3 pairs)',pre:'RM',min:0,step:1,tip:'What a customer pays for 3 pairs together.'},
+  bundlePct:{l:'Customers who buy a bundle',u:'%',min:0,max:100,step:1,tip:'Out of every 100 orders, how many are for 2 or 3 pairs.'},
+  threeShare:{l:'Bundle buyers who pick 3 pairs',u:'%',min:0,max:100,step:1,tip:'Out of the bundle orders, how many go for 3 pairs. The rest buy 2.'},
+  unitCostRMB:{l:'Cost per pair from supplier',pre:'RMB',min:0,step:0.1,conv:true,tip:'What your supplier charges for one pair, in yuan as they quoted it. The ringgit amount is shown next to it.'},
+  packaging:{l:'Packaging per pair',pre:'RM',min:0,step:0.1,tip:'Pouch, tag, card and mailer bag for one pair.'},
+  shipping:{l:'Delivery to customer, per order',pre:'RM',min:0,step:0.5,toggle:true,tip:'What the courier charges to send one order.'},
+  fx:{l:'Exchange rate',pre:'RM',u:'per RMB 1',min:0,step:0.01,tip:'How many ringgit you pay for 1 yuan. Use the rate your bank or payment app gives you.'},
+  freight:{l:'Shipping from China + import, per pair',pre:'RM',min:0,step:0.1,tip:'Getting the socks from the factory to you, divided by the number of pairs. RM 1.50 is a guess until a forwarder quotes you.'},
+  shopeePct:{l:'Orders on Shopee',u:'%',min:0,max:100,step:1,tip:'Out of every 100 orders, how many happen on Shopee.'},
+  tiktokPct:{l:'Orders on TikTok Shop',u:'%',min:0,max:100,step:1,tip:'Out of every 100 orders, how many happen on TikTok Shop. The rest are on your own website.'},
+  shopeeFee:{l:"Shopee's cut of each sale",u:'%',min:0,max:40,step:0.5,tip:'Everything Shopee keeps from a sale, as a percentage.'},
+  tiktokFee:{l:"TikTok Shop's cut of each sale",u:'%',min:0,max:40,step:0.5,tip:'Everything TikTok Shop keeps from a sale, as a percentage.'},
+  gateway:{l:'Card payment fee on my website',u:'%',min:0,max:10,step:0.1,tip:'What your payment provider keeps when someone pays on your own website.'},
+  moq:{l:'Minimum order quantity (MOQ)',u:'pairs',min:0,step:50,tip:'The smallest number of pairs your supplier lets you order, across all sizes. This is your first batch of stock.'},
+  adBudget:{l:'Monthly ad budget',pre:'RM',slider:[0,10000,50],tip:'The most you are willing to spend on ads each month.'},
+  cpa:{l:'Ad cost to get 1 order',pre:'RM',slider:[5,100,0.5],tip:'How much you spend on ads, on average, before one person buys. Spend RM 220 and get 10 orders = RM 22.'},
+  organic:{l:'Orders that come without ads',u:'%',min:0,max:90,step:1,tip:'Out of every 100 orders, how many come from friends, studios, word of mouth or your own posts.'},
+  swing:{l:'How much worse (or better) it gets',u:'%',min:0,max:90,step:5,tip:'Bad month: sales this much slower and ads this much more expensive. Great month: the opposite.'}
+};
+const GROUPS=[
+  {c:'sky',tag:'💙 Selling',t:'What I sell',main:['price1','price2','pairsPerMonth'],more:['price3','bundlePct','threeShare']},
+  {c:'pink',tag:'💗 Costs',t:'What each pair costs me',main:['unitCostRMB','packaging','shipping'],note:'dv-cost',more:['fx','freight','shopeePct','tiktokPct','shopeeFee','tiktokFee','gateway'],moreNote:'dv-mix'},
+  {c:'peach',tag:'🧡 Stock',t:'My first order',main:['moq'],note:'dv-stock'},
+  {c:'lav',tag:'💜 Ads',t:'My ads',main:['adBudget','cpa'],note:'dv-ads',more:['organic']},
+  {c:'pink',tag:'🌸 Start-up costs',t:'One-time costs',list:'launch',lt:'Total start-up costs'},
+  {c:'pink',tag:'🔄 Monthly bills',t:'Every month',list:'fixed',lt:'Total per month'}
+];
+
+/* ---------- State, plus moving older saved numbers across ---------- */
+let S={inputs:clone(D),launch:clone(DEF_LAUNCH),fixed:clone(DEF_FIXED),track:clone(EX_TRACK),examples:true,drop:'Drop 01 · Cloud Grip',donut:1,updatedAt:0,dv:DV};
+const LS='gripsock-dash-v1';
 function migrate(st){
-  if((st.dv||1)<DV){st.inputs=clone(DEFAULTS); if(st.examples!==false)st.track=clone(EX_TRACK);}
-  st.dv=DV; return st;
+  const old=st.inputs||{};
+  if((st.dv||1)<DV){
+    const keep=['price1','price2','price3','bundlePct','threeShare','unitCostRMB','fx','freight','packaging','shipping','shipMode','gateway','shopeePct','tiktokPct','shopeeFee','tiktokFee','adBudget','cpa','organic','months'];
+    const n=clone(D); keep.forEach(k=>{if(old[k]!=null)n[k]=old[k]});
+    if(old.capital!=null)n.savings=old.capital;
+    if(old.moqPerSize!=null&&old.sizes!=null)n.moq=old.moqPerSize*old.sizes;
+    if(old.cpaSwing!=null)n.swing=old.cpaSwing;
+    st.inputs=n;
+    if(st.examples!==false)st.track=clone(EX_TRACK);
+  }else st.inputs=Object.assign(clone(D),old);
+  st.dv=DV; if(!st.donut)st.donut=1; return st;
 }
-
-const FIELDS = {
-  top:[
-    {k:'months',l:'How many months to plan for',u:'months',min:1,max:24,step:1,tip:'The dashboard works out sales, costs and profit over this many months.'},
-    {k:'capital',l:'Money you start with',pre:'RM',min:0,step:500,tip:'The cash you have set aside for this drop.'}
-  ],
-  'Your prices':[
-    {k:'price1',l:'Price for 1 pair',pre:'RM',slider:[20,120,1],tip:'What a customer pays for one pair.'},
-    {k:'price2',l:'Price for 2 pairs',pre:'RM',min:0,step:1,tip:'What a customer pays for the 2-pair bundle.'},
-    {k:'price3',l:'Price for 3 pairs',pre:'RM',min:0,step:1,tip:'What a customer pays for the 3-pair bundle.'},
-    {k:'bundlePct',l:'Customers who buy a bundle',u:'%',slider:[0,100,1],tip:'Out of every 100 orders, how many are for 2 or 3 pairs instead of 1.'},
-    {k:'threeShare',l:'Bundle buyers who pick 3 pairs',u:'%',slider:[0,100,1],tip:'Out of the bundle orders, how many go for 3 pairs. The rest buy 2.'}
-  ],
-  'What each pair costs you':[
-    {k:'unitCostRMB',l:'Factory price per pair',pre:'RMB',min:0,step:0.1,conv:true,tip:'What your supplier charges for one pair, in yuan, as they quoted it. The ringgit amount next to it is what the dashboard uses.'},
-    {k:'fx',l:'Exchange rate',pre:'RM',u:'per RMB 1',min:0,step:0.01,tip:'How many ringgit you pay for 1 yuan. Use the rate your bank or payment app actually gives you, which is usually a bit worse than the one on Google.'},
-    {k:'freight',l:'Shipping from China + import, per pair',pre:'RM',min:0,step:0.1,tip:'What it costs to get the socks from the factory to you (shipping, tax and clearing), divided by the number of pairs. RM 1.50 is a guess until a forwarder quotes you.'},
-    {k:'packaging',l:'Packaging per pair',pre:'RM',min:0,step:0.1,tip:'Pouch, tag, card and mailer bag for one pair.'},
-    {k:'shipping',l:'Delivery to the customer, per order',pre:'RM',min:0,step:0.5,tip:'What the courier charges to send one order. Choose whether you pay it or the customer does.',toggle:true},
-    {k:'gateway',l:'Card / payment fee on your website',u:'%',min:0,max:10,step:0.1,tip:'The cut your payment provider takes when someone buys on your own website. Shopee and TikTok fees are set further down.'}
-  ],
-  'Stock':[
-    {k:'moqPerSize',l:'Pairs per size (supplier minimum)',u:'pairs',min:0,step:10,tip:'The smallest number of pairs your supplier lets you order for each size. Suppliers call this the MOQ.'},
-    {k:'sizes',l:'Number of sizes',u:'sizes',min:1,max:10,step:1,tip:'How many sizes you order. Total pairs = pairs per size × sizes.'},
-    {k:'sellThrough',l:'How much stock you expect to sell',u:'%',slider:[10,100,1],tip:'Out of all the pairs you order, how many you think you will sell in the months you are planning for. 70% of 1,000 pairs = 700 pairs.'}
-  ],
-  'One-time launch costs':'launch',
-  'Monthly bills':'fixed',
-  'Ads':[
-    {k:'adBudget',l:'Ad budget per month',pre:'RM',slider:[0,10000,50],tip:'The most you will spend on ads each month. If you are close to selling out, the dashboard spends less.'},
-    {k:'cpa',l:'Ad cost to get one order',pre:'RM',slider:[5,100,0.5],tip:'How much you spend on ads, on average, before one person buys. Spend RM 220 and get 10 orders = RM 22 per order. Ad platforms call this CPA.'},
-    {k:'organic',l:'Orders that come without ads',u:'%',slider:[0,90,1],tip:'Out of every 100 orders, how many come from word of mouth, studios, friends or your own posts, at no ad cost.'},
-    {k:'cpaSwing',l:'How much ad cost changes in the slow / great cases',u:'±%',min:0,max:90,step:5,tip:'In the slow case ads cost this much more per order. In the great case they cost this much less.'},
-    {k:'worstST',l:'Stock sold if sales are slow',u:'%',min:0,max:100,step:5,tip:'How much of your stock you sell in the slow case.'},
-    {k:'bestST',l:'Stock sold if sales are great',u:'%',min:0,max:100,step:5,tip:'How much of your stock you sell in the great case.'}
-  ],
-  'Where you sell':[
-    {k:'shopeePct',l:'Orders on Shopee',u:'%',slider:[0,100,1],tip:'Out of every 100 orders, how many happen on Shopee.'},
-    {k:'tiktokPct',l:'Orders on TikTok Shop',u:'%',slider:[0,100,1],tip:'Out of every 100 orders, how many happen on TikTok Shop. The rest are on your own website.'},
-    {k:'shopeeFee',l:'Shopee\'s cut of each sale',u:'%',min:0,max:40,step:0.5,tip:'Everything Shopee keeps from a sale (commission plus transaction fee), as a percentage.'},
-    {k:'tiktokFee',l:'TikTok Shop\'s cut of each sale',u:'%',min:0,max:40,step:0.5,tip:'Everything TikTok Shop keeps from a sale, as a percentage.'}
-  ]
-};
-
-/* ---------- State ---------- */
-const clone = o => JSON.parse(JSON.stringify(o));
-let S = {inputs:clone(DEFAULTS), launch:clone(DEF_LAUNCH), fixed:clone(DEF_FIXED), track:clone(EX_TRACK), examples:true, drop:'Drop 01 · Cloud Grip', scenario:'base', bundleView:3, updatedAt:0, dv:DV};
-const LS = 'gripsock-dash-v1';
-try{const s=JSON.parse(localStorage.getItem(LS)||'null'); if(s&&s.inputs) S=migrate(Object.assign(S,s,{inputs:Object.assign(clone(DEFAULTS),s.inputs)}));}catch(e){}
+try{const s=JSON.parse(localStorage.getItem(LS)||'null'); if(s&&s.inputs)S=migrate(Object.assign(S,s));}catch(e){}
 
 /* ---------- Format ---------- */
 const nf=(v,d=0)=>Math.abs(v).toLocaleString('en-MY',{minimumFractionDigits:d,maximumFractionDigits:d});
 const rm=(v,d=0)=>!isFinite(v)?'–':(v<-0.0049?'−':'')+'RM '+nf(v,d);
+const rmS=v=>{const a=Math.abs(v);return(v<0?'−':'')+'RM '+(a>=1000?nf(a/1000,a>=10000?0:1)+'k':nf(a))};
 const pc=(v,d=0)=>!isFinite(v)?'–':(v<0?'−':'')+nf(v*100,d)+'%';
-const x2=v=>!isFinite(v)?'n/a':nf(v,2)+'×';
 const sum=a=>a.reduce((s,r)=>s+(+r.v||0),0);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=id=>document.getElementById(id);
+const monthWord=n=>n+(n===1?' month':' months');
 
-/* ---------- Model ---------- */
-function model(I, launchTotal, fixedMonthly, sc){
-  const cpa=I.cpa*sc.cpaMult, st=Math.min(100,Math.max(0,sc.st))/100;
-  const org=Math.min(Math.max(I.organic,0),95)/100;
-  const b=I.bundlePct/100, p3=I.threeShare/100;
-  const mix=[1-b,b*(1-p3),b*p3], prices=[I.price1,I.price2,I.price3];
-  const aov=mix[0]*prices[0]+mix[1]*prices[1]+mix[2]*prices[2];
-  const ppo=mix[0]+2*mix[1]+3*mix[2];
+/* ---------- The money model ---------- */
+function model(I,launchT,fixedM,sc){
+  sc=sc||{sales:1,ad:1};
+  const unitCost=I.unitCostRMB*I.fx, landed=unitCost+I.freight;
+  const cpa=I.cpa*sc.ad, org=Math.min(Math.max(I.organic,0),95)/100;
+  const b=I.bundlePct/100,p3=I.threeShare/100,mix=[1-b,b*(1-p3),b*p3],prices=[I.price1,I.price2,I.price3];
+  const aov=mix[0]*prices[0]+mix[1]*prices[1]+mix[2]*prices[2], ppo=mix[0]+2*mix[1]+3*mix[2];
   const web=Math.max(0,100-I.shopeePct-I.tiktokPct);
   const feeRate=(web*I.gateway+I.shopeePct*I.shopeeFee+I.tiktokPct*I.tiktokFee)/10000;
-  const landed=I.unitCost+I.freight, ship=I.shipMode==='absorbed'?I.shipping:0;
-  const adPer=cpa*(1-org);
-  const order=(price,n)=>{const product=n*landed,pack=n*I.packaging,fees=price*feeRate,cmB=price-product-pack-ship-fees;return{price,n,product,pack,ship,fees,cmB,ads:adPer,cmA:cmB-adPer}};
-  const types=[order(prices[0],1),order(prices[1],2),order(prices[2],3)];
-  const avg=order(aov,ppo);
-  const beROAS=avg.cmB>0?aov/avg.cmB:Infinity, roas=cpa>0?aov/cpa:Infinity;
-  const beCPA=avg.cmB, beCPA2=avg.cmB/(1-org);
-  const stock=Math.max(0,I.moqPerSize*I.sizes), invCost=stock*landed;
-  const N=Math.max(1,Math.round(I.months)), cap=stock*st;
-  const demand=cpa>0?(I.adBudget/cpa)/(1-org):0;
-  const rows=[{m:0,cash:I.capital-invCost-launchTotal,orders:0,rev:0,ad:0,units:0,profit:-launchTotal}];
-  let sold=0,cash=rows[0].cash,cum=-launchTotal,payback=null,beMonth=null,minCash=cash,minM=0;
-  const T={rev:0,orders:0,units:0,ad:0,cogs:0,pack:0,ship:0,fees:0,fixed:0,profit:0};
-  const H=Math.max(N,48);
-  for(let m=1;m<=H;m++){
-    const lim=m<=N?cap:stock, avail=Math.max(0,lim-sold);
-    if(m>N&&avail<=0.01)break;
-    const orders=ppo>0?Math.min(demand,avail/ppo):0, units=orders*ppo;
-    sold+=units;
+  const ship=I.shipMode==='absorbed'?I.shipping:0, adPer=cpa*(1-org);
+  const order=(price,n)=>{const supplier=n*landed,pack=n*I.packaging,fees=price*feeRate,before=price-supplier-pack-ship-fees;return{price,n,supplier,pack,ship,fees,ads:adPer,before,keep:before-adPer}};
+  const types=[order(prices[0],1),order(prices[1],2),order(prices[2],3)], avg=order(aov,ppo);
+  const stock=Math.max(0,I.moq), invCost=stock*landed, N=Math.max(1,Math.round(I.months));
+  const pairsPM=Math.max(0,I.pairsPerMonth*sc.sales);
+  const rows=[{m:0,money:-(invCost+launchT),units:0,orders:0,rev:0,ad:0}];
+  let sold=0,money=rows[0].money,cum=-launchT,payback=null,profitMonth=null;
+  const T={rev:0,units:0,orders:0,ad:0,profit:0};
+  for(let m=1;m<=36;m++){
+    const avail=Math.max(0,stock-sold); if(m>N&&avail<=0.01)break;
+    const units=ppo>0?Math.min(pairsPM,avail):0, orders=ppo>0?units/ppo:0; sold+=units;
     const rev=orders*aov, ad=orders*(1-org)*cpa, pack=units*I.packaging, shp=orders*ship, fees=rev*feeRate, cogs=units*landed;
-    const flow=rev-pack-shp-fees-ad-fixedMonthly, profit=flow-cogs;
-    cash+=flow; cum+=profit;
-    if(payback===null&&cash>=I.capital-0.5)payback=m;
-    if(beMonth===null&&cum>=0)beMonth=m;
-    if(m<=N){
-      rows.push({m,cash,orders,rev,ad,units,profit});
-      if(cash<minCash){minCash=cash;minM=m}
-      T.rev+=rev;T.orders+=orders;T.units+=units;T.ad+=ad;T.cogs+=cogs;T.pack+=pack;T.ship+=shp;T.fees+=fees;T.fixed+=fixedMonthly;T.profit+=profit;
-    }
-    if(m>N&&payback!==null&&beMonth!==null)break;
+    const flow=rev-pack-shp-fees-ad-fixedM, profit=flow-cogs;
+    money+=flow; cum+=profit;
+    rows.push({m,money,units,orders,rev,ad});
+    if(payback===null&&money>=-0.5)payback=m;
+    if(profitMonth===null&&cum>=0)profitMonth=m;
+    if(m<=N){T.rev+=rev;T.units+=units;T.orders+=orders;T.ad+=ad;T.profit+=profit}
+    if(m>=N&&payback!==null)break;
   }
-  const net=T.profit-launchTotal, totalInv=invCost+launchTotal+fixedMonthly*N;
-  const perPairA=ppo>0?avg.cmA/ppo:0;
-  return {I,sc,cpa,st,org,mix,aov,ppo,web,feeRate,landed,ship,adPer,types,avg,beROAS,roas,beCPA,beCPA2,stock,invCost,N,cap,demand,rows,T,
-    net,totalInv,roi:totalInv>0?net/totalInv:0,gross:T.rev-T.cogs-T.pack,payback,beMonth,minCash,minM,endCash:rows[rows.length-1].cash,
-    stockLeft:stock-T.units,demandPairs:demand*ppo*N,beUnits:perPairA>0?(launchTotal+fixedMonthly*N)/perPairA:Infinity,launchTotal,fixedMonthly};
+  const shown=rows.slice(0,Math.min(rows.length,Math.max(N,payback||0)+1));
+  const need=-Math.min(...shown.map(r=>r.money));
+  const profitN=T.profit-launchT, putIn=invCost+launchT+fixedM*N;
+  const ordersPM=ppo>0?pairsPM/ppo:0, adNeedPM=ordersPM*(1-org)*cpa;
+  return{I,sc,unitCost,landed,cpa,org,aov,ppo,web,feeRate,ship,types,avg,stock,invCost,N,pairsPM,rows,shown,payback,profitMonth,need,profitN,putIn,
+    roi:putIn>0?profitN/putIn:0,T,launchT,fixedM,ordersPM,adNeedPM,sellOut:pairsPM>0?stock/pairsPM:Infinity,stockLeft:Math.max(0,stock-T.units),
+    beROAS:avg.before>0?aov/avg.before:Infinity,roas:cpa>0?aov/cpa:Infinity,beCPA:avg.before/(1-org),keepPair:ppo>0?avg.keep/ppo:0};
 }
-function scen(name,I){
-  const sw=I.cpaSwing/100;
-  if(name==='worst')return{name:'Slow sales',cpaMult:1+sw,st:I.worstST};
-  if(name==='best')return{name:'Great sales',cpaMult:Math.max(0.05,1-sw),st:I.bestST};
-  return{name:'Expected',cpaMult:1,st:I.sellThrough};
-}
-function runAll(){
-  S.inputs.unitCost=(+S.inputs.unitCostRMB||0)*(+S.inputs.fx||0);
-  const lt=sum(S.launch), fm=sum(S.fixed);
-  const R={}; for(const k of['worst','base','best'])R[k]=model(S.inputs,lt,fm,scen(k,S.inputs));
-  return R;
-}
+const SCN={bad:I=>({sales:1-I.swing/100,ad:1+I.swing/100}),mid:()=>({sales:1,ad:1}),great:I=>({sales:1+I.swing/100,ad:Math.max(.05,1-I.swing/100)})};
+function runAll(){const lt=sum(S.launch),fm=sum(S.fixed),R={};for(const k in SCN)R[k]=model(S.inputs,lt,fm,SCN[k](S.inputs));return R}
 
 /* ---------- Inputs UI ---------- */
-const fieldEls={};
-function fieldHTML(f){
-  const v=S.inputs[f.k];
-  const pre=f.pre?`<span>${f.pre}</span>`:'', post=f.u?`<span>${f.u}</span>`:'';
-  const tip=`<button class="tip" type="button" data-tip="${esc(f.tip)}" aria-label="${esc(f.tip)}">ⓘ</button>`;
-  const box=`<div class="box">${pre}<input id="in-${f.k}" type="number" inputmode="decimal" data-k="${f.k}" value="${v}" step="${f.slider?f.slider[2]:f.step||1}" ${f.min!=null?`min="${f.min}"`:''} ${f.max!=null?`max="${f.max}"`:''}>${post}</div>`;
-  let ctl;
-  if(f.slider){ctl=`<div class="row sl"><input type="range" id="sl-${f.k}" aria-label="${esc(f.l)}" data-k="${f.k}" min="${f.slider[0]}" max="${f.slider[1]}" step="${f.slider[2]}" value="${v}">${box}</div>`}
-  else ctl=`<div class="row">${box}${f.conv?`<div class="conv" aria-live="polite"><span>=</span><b class="num" id="conv-${f.k}"></b></div>`:''}</div>`;
-  if(f.toggle)ctl+=`<div class="toggle" role="group" aria-label="Shipping"><button type="button" data-ship="absorbed" aria-pressed="${S.inputs.shipMode==='absorbed'}">I pay it</button><button type="button" data-ship="charged" aria-pressed="${S.inputs.shipMode==='charged'}">Customer pays</button></div>`;
-  return `<div class="field" id="f-${f.k}"><label for="in-${f.k}">${esc(f.l)} ${tip}</label>${ctl}</div>`;
+function fieldHTML(k){
+  const f=F[k],v=S.inputs[k];
+  const pre=f.pre?`<span>${f.pre}</span>`:'',post=f.u?`<span>${f.u}</span>`:'';
+  const tip=`<button class="tip" type="button" data-tip="${esc(f.tip)}" aria-label="${esc(f.tip)}">?</button>`;
+  const box=`<div class="box">${pre}<input id="in-${k}" type="number" inputmode="decimal" data-k="${k}" value="${v}" step="${f.slider?f.slider[2]:f.step||1}" ${f.min!=null?`min="${f.min}"`:''} ${f.max!=null?`max="${f.max}"`:''}>${post}</div>`;
+  let ctl=f.slider?`<div class="row sl"><input type="range" id="sl-${k}" aria-label="${esc(f.l)}" data-k="${k}" min="${f.slider[0]}" max="${f.slider[1]}" step="${f.slider[2]}" value="${v}">${box}</div>`
+    :`<div class="row">${box}${f.conv?`<div class="conv">= <b class="num" id="conv-${k}"></b></div>`:''}</div>`;
+  if(f.toggle)ctl+=`<div class="toggle" role="group" aria-label="Who pays delivery"><button type="button" data-ship="absorbed" aria-pressed="${S.inputs.shipMode==='absorbed'}">I pay it (free delivery)</button><button type="button" data-ship="charged" aria-pressed="${S.inputs.shipMode==='charged'}">Customer pays</button></div>`;
+  return `<div class="field" id="f-${k}"><label for="in-${k}">${esc(f.l)} ${tip}</label>${ctl}</div>`;
 }
-function listHTML(key,title){
-  const L=S[key];
-  return `<div class="list" id="list-${key}">${L.map((r,i)=>`<div class="list-row"><div class="box"><input id="${key}-n-${i}" aria-label="Cost name" data-list="${key}" data-i="${i}" data-f="n" value="${esc(r.n)}"></div><div class="box"><span>RM</span><input id="${key}-v-${i}" type="number" inputmode="decimal" aria-label="${esc(r.n)} amount" data-list="${key}" data-i="${i}" data-f="v" value="${r.v}"></div><button type="button" class="x" data-del="${key}" data-i="${i}" aria-label="Remove ${esc(r.n)}">×</button></div>`).join('')}
-  <div class="row" style="justify-content:space-between"><button type="button" class="ghost" data-add="${key}">+ Add a cost</button><span class="total">${title}&nbsp;<b class="num" id="tot-${key}"></b></span></div></div>`;
+function listHTML(key,lt){
+  return `<div class="list" id="list-${key}">${S[key].map((r,i)=>`<div class="list-row"><div class="box"><input id="${key}-n-${i}" aria-label="Cost name" data-list="${key}" data-i="${i}" data-f="n" value="${esc(r.n)}"></div><div class="box"><span>RM</span><input id="${key}-v-${i}" type="number" inputmode="decimal" aria-label="${esc(r.n)} amount" data-list="${key}" data-i="${i}" data-f="v" value="${r.v}"></div><button type="button" class="x" data-del="${key}" data-i="${i}" aria-label="Remove ${esc(r.n)}">×</button></div>`).join('')}
+  <div class="row" style="justify-content:space-between;flex-wrap:wrap"><button type="button" class="add" data-add="${key}">＋ Add more</button><span class="total">${lt}: <b class="num" id="tot-${key}"></b></span></div></div>`;
 }
-const chev='<svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg>';
 function buildInputs(){
-  document.getElementById('topFields').innerHTML=FIELDS.top.map(fieldHTML).join('');
-  let h='';
-  for(const [name,fs] of Object.entries(FIELDS)){
-    if(name==='top')continue;
-    let body;
-    if(fs==='launch')body=listHTML('launch','One-off total');
-    else if(fs==='fixed')body=listHTML('fixed','Per month');
-    else{
-      body=fs.map(fieldHTML).join('');
-      if(name==='Stock')body+=`<div class="derived" id="dv-stock"></div>`;
-      if(name==='Where you sell')body+=`<div class="derived" id="dv-mix"></div>`;
-      if(name==='What each pair costs you')body+=`<div class="derived" id="dv-landed"></div>`;
-    }
-    h+=`<details class="sect" open><summary>${name}${chev}</summary><div class="sect-body">${body}</div></details>`;
-  }
-  document.getElementById('sections').innerHTML=h;
+  $('strip').innerHTML=fieldHTML('months')+fieldHTML('savings');
+  $('groups').innerHTML=GROUPS.map(g=>{
+    let body=g.list?listHTML(g.list,g.lt):g.main.map(fieldHTML).join('');
+    if(g.note)body+=`<div class="note" id="${g.note}"></div>`;
+    if(g.more)body+=`<details class="inner"><summary>More options</summary><div class="in">${g.more.map(fieldHTML).join('')}${g.moreNote?`<div class="note" id="${g.moreNote}"></div>`:''}</div></details>`;
+    return `<div class="grp g-${g.c}"><div class="grp-h"><span class="tag">${g.tag}</span><h3>${g.t}</h3></div>${body}</div>`;
+  }).join('');
+  $('wiSettings').innerHTML=fieldHTML('swing');
   markChanged();
 }
-function markChanged(){
-  for(const k in DEFAULTS){const el=document.getElementById('f-'+k); if(el)el.classList.toggle('changed',S.inputs[k]!==DEFAULTS[k]&&!(k==='shipping'&&false));}
-  const fs=document.getElementById('f-shipping'); if(fs&&S.inputs.shipMode!==DEFAULTS.shipMode)fs.classList.add('changed');
-}
+function markChanged(){for(const k in F){const el=$('f-'+k);if(el)el.classList.toggle('changed',S.inputs[k]!==D[k]||(k==='shipping'&&S.inputs.shipMode!==D.shipMode))}}
 function setInput(k,v,src){
   if(!isFinite(v))return;
   if(k==='shopeePct'&&v+S.inputs.tiktokPct>100)v=100-S.inputs.tiktokPct;
   if(k==='tiktokPct'&&v+S.inputs.shopeePct>100)v=100-S.inputs.shopeePct;
   S.inputs[k]=v;
-  const sl=document.getElementById('sl-'+k), ib=document.getElementById('in-'+k);
-  if(sl&&sl!==src)sl.value=v;
-  if(ib&&ib!==src)ib.value=v;
-  if(src&&src.type==='number'&&(k==='shopeePct'||k==='tiktokPct')&&+src.value!==v)src.value=v;
+  const sl=$('sl-'+k),ib=$('in-'+k);
+  if(sl&&sl!==src)sl.value=v; if(ib&&ib!==src)ib.value=v;
+  if(src&&src.type==='number'&&+src.value!==v)src.value=v;
   markChanged(); update(); save();
 }
 document.addEventListener('input',e=>{
   const t=e.target;
-  if(t.dataset.k){ if(t.value==='')return; setInput(t.dataset.k,parseFloat(t.value),t); }
-  else if(t.dataset.list){const r=S[t.dataset.list][+t.dataset.i]; if(t.dataset.f==='n')r.n=t.value; else r.v=parseFloat(t.value)||0; update(); save();}
-  else if(t.dataset.trk){const [m,f]=t.dataset.trk.split('.'); S.track[m]=S.track[m]||{}; if(t.value==='')delete S.track[m][f]; else S.track[m][f]=parseFloat(t.value); S.examples=false; renderTracker(true); renderExBadge(); save();}
-  else if(t.id==='dropName'){S.drop=t.value; save();}
+  if(t.dataset.k){if(t.value==='')return;setInput(t.dataset.k,parseFloat(t.value),t)}
+  else if(t.dataset.list){const r=S[t.dataset.list][+t.dataset.i];if(t.dataset.f==='n')r.n=t.value;else r.v=parseFloat(t.value)||0;update();save()}
+  else if(t.dataset.ck){const [m,f]=t.dataset.ck.split('.');S.track[m]=S.track[m]||{};if(t.value==='')delete S.track[m][f];else S.track[m][f]=parseFloat(t.value);S.examples=false;renderCheckin(true);renderExBadge();save()}
+  else if(t.id==='dropName'){S.drop=t.value;save()}
 });
 document.addEventListener('click',e=>{
   const t=e.target.closest('button'); if(!t)return;
-  if(t.dataset.ship){S.inputs.shipMode=t.dataset.ship; t.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===t)); markChanged(); update(); save();}
-  else if(t.dataset.add){S[t.dataset.add].push({n:'New cost',v:0}); rebuildList(t.dataset.add); update(); save(); const L=S[t.dataset.add]; document.getElementById(`${t.dataset.add}-n-${L.length-1}`)?.select();}
-  else if(t.dataset.del){S[t.dataset.del].splice(+t.dataset.i,1); rebuildList(t.dataset.del); update(); save();}
-  else if(t.dataset.scn){S.scenario=t.dataset.scn; update(); save();}
-  else if(t.dataset.b){S.bundleView=+t.dataset.b; update(); save();}
-  else if(t.id==='clearEx'){S.track={}; S.examples=false; renderTracker(); renderExBadge(); save();}
+  if(t.dataset.ship){S.inputs.shipMode=t.dataset.ship;t.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===t));markChanged();update();save()}
+  else if(t.dataset.add){const k=t.dataset.add;S[k].push({n:'New cost',v:0});rebuildList(k);update();save();$(`${k}-n-${S[k].length-1}`)?.select()}
+  else if(t.dataset.del){S[t.dataset.del].splice(+t.dataset.i,1);rebuildList(t.dataset.del);update();save()}
+  else if(t.dataset.dn){S.donut=+t.dataset.dn;renderDonut(runAll().mid);save()}
+  else if(t.id==='clearEx'){S.track={};S.examples=false;renderCheckin();renderExBadge();save()}
 });
-function rebuildList(key){
-  const host=document.getElementById('list-'+key);
-  host.outerHTML=listHTML(key,key==='launch'?'One-off total':'Per month');
-}
-// Reset with in-page confirm
-const resetBtn=document.getElementById('resetBtn'); let resetArm=null;
+function rebuildList(k){const g=GROUPS.find(g=>g.list===k);$('list-'+k).outerHTML=listHTML(k,g.lt)}
+const resetBtn=$('resetBtn'); let resetArm=null;
 resetBtn.addEventListener('click',()=>{
-  if(!resetArm){resetBtn.textContent='Tap again to confirm';resetBtn.classList.add('danger');resetArm=setTimeout(()=>{resetArm=null;resetBtn.textContent='Start over with the original numbers';resetBtn.classList.remove('danger')},3500);return;}
-  clearTimeout(resetArm);resetArm=null;resetBtn.textContent='Start over with the original numbers';resetBtn.classList.remove('danger');
-  S.inputs=clone(DEFAULTS);S.launch=clone(DEF_LAUNCH);S.fixed=clone(DEF_FIXED);
-  buildInputs(); update(); save();
+  if(!resetArm){resetBtn.textContent='Tap again to reset everything';resetBtn.classList.add('warnbtn');resetArm=setTimeout(()=>{resetArm=null;resetBtn.textContent='↺ Reset to example numbers';resetBtn.classList.remove('warnbtn')},3500);return}
+  clearTimeout(resetArm);resetArm=null;resetBtn.textContent='↺ Reset to example numbers';resetBtn.classList.remove('warnbtn');
+  S.inputs=clone(D);S.launch=clone(DEF_LAUNCH);S.fixed=clone(DEF_FIXED);buildInputs();update();save();
 });
 
 /* ---------- Animated numbers ---------- */
@@ -553,200 +506,165 @@ function anim(el,to,fmt){
   if(!isFinite(to)){el.textContent=fmt(to);el._v=to;return}
   const from=isFinite(el._v)?el._v:to; el._v=to;
   if(reduce||from===to){el.textContent=fmt(to);return}
-  const t0=performance.now(),d=420; cancelAnimationFrame(el._raf);
+  const t0=performance.now(),d=450; cancelAnimationFrame(el._raf);
   const step=t=>{const p=Math.min(1,(t-t0)/d),e=1-Math.pow(1-p,3);el.textContent=fmt(from+(to-from)*e);if(p<1)el._raf=requestAnimationFrame(step)};
   el._raf=requestAnimationFrame(step);
 }
-const $=id=>document.getElementById(id);
-const setDot=(id,s)=>{$(id).className='dot '+s};
 
 /* ---------- Render ---------- */
 function update(){
-  const R=runAll(), M=R[S.scenario], B=R.base, I=S.inputs;
-  document.querySelectorAll('[data-scn]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.scn===S.scenario));
-  const sw=I.cpaSwing;
-  $('scnNote').textContent=S.scenario==='base'?`You're looking at the expected case: RM ${nf(I.cpa,2)} in ads per order, and you sell ${I.sellThrough}% of your stock.`:
-    S.scenario==='worst'?`You're looking at the slow case: ads cost ${sw}% more (RM ${nf(M.cpa,2)} per order), and you sell only ${I.worstST}% of your stock.`:`You're looking at the great case: ads cost ${sw}% less (RM ${nf(M.cpa,2)} per order), and you sell ${I.bestST}% of your stock.`;
-  $('scnDesc').textContent=`Slow: ads cost ${sw}% more per order and you sell ${I.worstST}% of your stock. Expected: the numbers you typed in. Great: ads cost ${sw}% less and you sell ${I.bestST}%.`;
+  const R=runAll(),M=R.mid,I=S.inputs;
+  $('conv-unitCostRMB').textContent=rm(M.unitCost,2)+' per pair';
+  $('dv-cost').innerHTML=`With shipping from China, one pair costs you <b>${rm(M.landed,2)}</b> by the time it reaches you.`;
+  $('dv-mix').innerHTML=`Your own website gets the other <b>${nf(M.web)}%</b> of orders. Across all three, fees take <b>${pc(M.feeRate,1)}</b> of each sale.`;
+  $('dv-stock').innerHTML=`${nf(M.stock)} pairs cost you <b>${rm(M.invCost)}</b>. At ${nf(M.pairsPM)} pairs a month they last about <b>${isFinite(M.sellOut)?monthWord(Math.round(M.sellOut*10)/10):'forever'}</b>.`;
+  $('dv-ads').innerHTML=M.adNeedPM>I.adBudget*1.05?`To sell ${nf(M.pairsPM)} pairs a month you'd spend about <b>${rm(M.adNeedPM)}</b> on ads, which is more than your budget.`:`To sell ${nf(M.pairsPM)} pairs a month you'd spend about <b>${rm(M.adNeedPM)}</b> on ads. That fits your budget.`;
+  $('tot-launch').textContent=rm(M.launchT); $('tot-fixed').textContent=rm(M.fixedM);
 
-  // derived input notes
-  $('dv-stock').innerHTML=`You order <b>${nf(M.stock)} pairs</b>, costing <b>${rm(M.invCost)}</b>. You plan to sell <b>${nf(M.stock*I.sellThrough/100)}</b> of them.`;
-  $('dv-mix').innerHTML=`Your own website gets the other <b>${nf(M.web)}%</b>. Across all three, fees take <b>${pc(M.feeRate,1)}</b> of each sale on average.`;
-  $('conv-unitCostRMB').textContent=`${rm(I.unitCost,2)} per pair`;
-  $('dv-landed').innerHTML=`Factory price <b>RMB ${nf(I.unitCostRMB,2)}</b> = <b>${rm(I.unitCost,2)}</b>. With shipping from China, one pair costs you <b>${rm(M.landed,2)}</b> by the time it reaches you.${I.shipMode==='charged'?' The customer pays for delivery.':''}`;
-  $('tot-launch').textContent=rm(M.launchTotal); $('tot-fixed').textContent=rm(M.fixedMonthly);
+  // 1. Big answer
+  const adOK=M.adNeedPM<=I.adBudget*1.05; let cls,face,title,sub;
+  if(M.avg.keep<=0){cls='bad';face='😟';title="You're losing money on each sale. Check your costs below.";sub=`After socks, delivery, fees and ads, each order loses ${rm(-M.avg.keep,2)}. Try a higher price, cheaper delivery or a lower ad cost.`}
+  else if(M.payback===null){cls='bad';face='😟';title="You make a little on each sale, but not enough to get your money back.";sub=`You keep ${rm(M.keepPair,2)} a pair, but stock, start-up costs and bills are too much for ${nf(M.pairsPM)} pairs a month. Sell more each month or cut costs.`}
+  else if(M.payback<=M.N&&adOK){cls='good';face='🥳';title=`Your plan looks healthy! You'll get your money back in about ${monthWord(M.payback)}.`;sub=`You keep ${rm(M.keepPair,2)} on every pair and make ${rm(M.profitN)} profit in ${monthWord(M.N)}.`}
+  else if(!adOK){cls='warn';face='🤔';title='Almost there. Your ad budget is too small for the sales you planned.';sub=`Selling ${nf(M.pairsPM)} pairs a month needs about ${rm(M.adNeedPM)} of ads, but your budget is ${rm(I.adBudget)}. Raise the budget, plan fewer sales, or bring down the ad cost per order.`}
+  else{cls='warn';face='🤔';title=`Almost there. You'll get your money back in about ${monthWord(M.payback)}, which is a bit slow.`;sub='Try raising your price or lowering your ad cost to get your money back sooner.'}
+  if(I.savings>0&&M.need>I.savings)sub+=` Also, you need ${rm(M.need)} to start but have ${rm(I.savings)} saved.`;
+  $('answer').className='answer '+cls; $('ansFace').textContent=face; $('ansTitle').textContent=title; $('ansSub').textContent=sub;
 
-  // KPIs
-  anim($('k-profit'),M.net,v=>rm(v));
-  const pS=M.net>0?'good':M.net>-0.05*M.totalInv?'warn':'bad'; setDot('d-profit',pS);
-  $('w-profit').textContent=M.net>=0?`What you make in ${M.N} months from selling ${nf(M.T.units)} pairs.`:`You lose money over ${M.N} months. You'd need to sell ${isFinite(M.beUnits)?nf(Math.ceil(M.beUnits))+' pairs':'more'} to cover your costs.`;
-  anim($('k-roi'),M.roi*100,v=>(v<0?'−':'')+nf(v,1)+'%');
-  setDot('d-roi',M.roi>=0.2?'good':M.roi>=0?'warn':'bad');
-  $('w-roi').textContent=M.roi>=0?`For every RM 100 you put in, you get back RM ${nf((1+M.roi)*100)}.`:`For every RM 100 you put in, you only get back RM ${nf(Math.max(0,1+M.roi)*100)}.`;
-  anim($('k-roas'),M.beROAS,v=>!isFinite(v)?'n/a':'RM '+nf(v,2));
-  const rS=!isFinite(M.beROAS)?'bad':M.roas>=M.beROAS*1.2?'good':M.roas>=M.beROAS?'warn':'bad'; setDot('d-roas',rS);
-  $('w-roas').textContent=!isFinite(M.beROAS)?'Each order loses money even before ads. Raise your price or cut costs.':`Each RM 1 on ads must bring in at least RM ${nf(M.beROAS,2)} in sales. At your ad cost you'd get RM ${nf(M.roas,2)}${M.roas>=M.beROAS?', so ads pay off':', so ads lose money'}.`;
-  const pay=M.payback, payEl=$('k-pay');
-  if(pay===null){payEl._v=NaN;payEl.textContent='Not yet'}else anim(payEl,pay,v=>nf(v)+(Math.round(v)===1?' month':' months'));
-  setDot('d-pay',pay===null?'bad':pay<=M.N?'good':pay<=M.N*2?'warn':'bad');
-  $('w-pay').textContent=pay===null?'At this pace, sales never pay back what you spent on stock and launch.':pay<=M.N?`By Month ${pay} your bank balance is back to RM ${nf(I.capital)}.`:`That's after the ${M.N} months you're planning for, if the leftover stock keeps selling.`;
-  anim($('k-cash'),M.endCash,v=>rm(v));
-  setDot('d-cash',M.minCash<0?'bad':M.endCash<I.capital?'warn':'good');
-  $('w-cash').textContent=M.minCash<0?`You run out of money in Month ${M.minM}. You'd need ${rm(-M.minCash)} more.`:M.endCash<I.capital?`Less than you started with. ${nf(M.stockLeft)} pairs are still unsold.`:`More than the RM ${nf(I.capital)} you started with. The lowest it gets is ${rm(M.minCash)}.`;
+  // 2. Key numbers
+  anim($('k-need'),M.need,v=>rm(v));
+  $('w-need').textContent=`Stock ${rm(M.invCost)} + start-up costs ${rm(M.launchT)}${M.need>M.invCost+M.launchT+1?', plus early bills and ads before sales catch up':''}.`;
+  anim($('k-keep'),M.keepPair,v=>rm(v,2));
+  $('w-keep').textContent='After the socks, packaging, delivery, fees and ads. Monthly bills come out of the total.';
+  const kb=$('k-back');
+  if(M.payback===null){kb._v=NaN;kb.textContent='Not yet'}else anim(kb,M.payback,v=>'Month '+Math.round(v));
+  $('w-back').textContent=M.payback===null?'At this pace, sales never pay back what you spent.':'By then, sales have paid back your stock and start-up costs.';
+  $('l-profit').textContent=`Total profit after ${monthWord(M.N)}`;
+  anim($('k-profit'),M.profitN,v=>rm(v));
+  $('w-profit').textContent=M.profitN>=0?`From selling ${nf(M.T.units)} pairs, after every cost.`:`A loss so far, from selling ${nf(M.T.units)} pairs.`;
 
-  renderWaterfalls(M); renderUnit(M); renderCash(M); renderScen(R); renderTracker(); renderExBadge();
+  const mini=(l,v,s)=>`<div class="mini"><span class="l">${l}</span><b class="num">${v}</b><small>${s}</small></div>`;
+  $('minis').innerHTML=[
+    mini('How much I earn back for every RM1 I put in',rm(1+M.roi,2),`Put in RM 1, get back ${rm(1+M.roi,2)} after ${monthWord(M.N)}.`),
+    mini('Sales I get for every RM1 spent on ads',rm(M.roas,2),`You need at least ${rm(M.beROAS,2)} for ads to pay off.`),
+    mini('Most I can pay in ads for 1 order',rm(M.beCPA,2),`Above this, orders from ads lose money. You plan ${rm(M.cpa,2)}.`),
+    mini('Typical order',rm(M.aov,2),`About ${nf(M.ppo,1)} pairs, counting bundles.`),
+    mini(`Total sales in ${monthWord(M.N)}`,rm(M.T.rev),`${nf(M.T.orders)} orders, ${nf(M.T.units)} pairs.`),
+    mini(`Spent on ads in ${monthWord(M.N)}`,rm(M.T.ad),`About ${rm(M.T.ad/M.N)} a month.`),
+    mini('Pairs left at the end',nf(M.stockLeft),M.stockLeft>0?`Worth ${rm(M.stockLeft*M.landed)} at cost, waiting to be sold.`:'You sell out within the plan.'),
+    mini('Month I start making a profit',M.profitMonth?'Month '+M.profitMonth:'Not yet','When sales have covered every cost so far, counting stock only as it sells.'),
+    mini('Money I have saved',rm(I.savings),M.need>I.savings?`${rm(M.need-I.savings)} short of what you need.`:`Enough, with ${rm(I.savings-M.need)} to spare.`)
+  ].join('');
+
+  renderDonut(M); renderChart(M); renderWhatIf(R); renderCheckin(); renderExBadge(); renderTips(M);
 }
 
-function renderWaterfalls(M){
-  const o1=M.types[0], o2=M.types[S.bundleView-1];
-  document.querySelectorAll('[data-b]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.b===S.bundleView));
-  $('wf1').innerHTML=wfSVG(o1); $('wf2').innerHTML=wfSVG(o2);
-  $('wf1-keep').textContent=`You keep ${rm(o1.cmA,2)}`; $('wf2-keep').textContent=`You keep ${rm(o2.cmA,2)} (${rm(o2.cmA/o2.n,2)} a pair)`;
-}
-function wfSVG(o){
-  const steps=[['Socks',o.product],['Packaging',o.pack],['Delivery',o.ship],['Fees',o.fees],['Ads',o.ads]];
-  const W=520,H=250,padL=8,padR=8,top=26,bot=44,n=7,gw=(W-padL-padR)/n,bw=gw*0.62;
-  const lo=Math.min(0,o.cmA), hi=Math.max(o.price,1);
-  const y=v=>top+(hi-v)/(hi-lo)*(H-top-bot);
-  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Price RM ${nf(o.price,2)} breaks down into costs and RM ${nf(o.cmA,2)} profit">`;
-  s+=`<line x1="0" x2="${W}" y1="${y(0)}" y2="${y(0)}" stroke="var(--line)"/>`;
-  const bar=(i,a,b,fill,lab,val)=>{const x=padL+gw*i+(gw-bw)/2,y1=y(Math.max(a,b)),y2=y(Math.min(a,b));
-    s+=`<rect x="${x}" y="${y1}" width="${bw}" height="${Math.max(1.5,y2-y1)}" rx="7" fill="${fill}"/>`;
-    s+=`<text x="${x+bw/2}" y="${y1-7}" text-anchor="middle" font-size="12.5" font-weight="600" fill="var(--ink)">${val}</text>`;
-    s+=`<text x="${x+bw/2}" y="${H-24}" text-anchor="middle" font-size="12" fill="var(--muted)">${lab}</text>`;
-    s+=`<text x="${x+bw/2}" y="${H-8}" text-anchor="middle" font-size="11" fill="var(--muted)">${o.price>0?nf(Math.abs(a-b)/o.price*100)+'%':''}</text>`;};
-  bar(0,0,o.price,'var(--accent)','Price',nf(o.price,2));
-  let run=o.price;
-  const link=(i,v)=>{const x1=padL+gw*i+(gw+bw)/2,x2=padL+gw*(i+1)+(gw-bw)/2;s+=`<line x1="${x1}" x2="${x2}" y1="${y(v)}" y2="${y(v)}" stroke="var(--muted)" stroke-dasharray="2 3" opacity=".6"/>`};
-  steps.forEach(([l,v],i)=>{const nx=run-v; link(i,run); bar(i+1,run,nx,'var(--sky)',l,v>0?'−'+nf(v,2):'0'); run=nx;});
-  link(5,run);
-  bar(6,0,o.cmA,o.cmA>=0?'var(--good)':'var(--bad)','You keep',nf(o.cmA,2));
-  return s+'</svg>';
+/* 4. Donut */
+const DN=[['Supplier cost','#FF9EBB','supplier'],['Packaging','#FFC48A','pack'],['Delivery','#9CCBF5','ship'],['Fees','#E9EE6E','fees'],['Ads','#B79AD0','ads'],['I keep','#7FE38E','keep']];
+function renderDonut(M){
+  document.querySelectorAll('[data-dn]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.dn===S.donut));
+  const o=M.types[S.donut-1],n=o.n,price=o.price/n;
+  const parts=DN.map(([l,c,k])=>({l,c,v:Math.max(0,o[k]/n)})),total=parts.reduce((s,p)=>s+p.v,0)||1;
+  const r=40,C=2*Math.PI*r; let off=0;
+  let svg=`<svg viewBox="0 0 100 100" role="img" aria-label="Out of ${rm(price,2)}, you keep ${rm(o.keep/n,2)}"><circle cx="50" cy="50" r="${r}" fill="none" stroke="#F3EEE6" stroke-width="16"/>`;
+  parts.forEach(p=>{const len=p.v/total*C;if(len>0.01)svg+=`<circle cx="50" cy="50" r="${r}" fill="none" stroke="${p.c}" stroke-width="16" stroke-dasharray="${Math.max(0.01,len-0.7)} ${C}" stroke-dashoffset="${-off}"/>`;off+=len});
+  $('donutSvg').innerHTML=svg+'</svg>';
+  $('dnKeep').textContent=rm(o.keep/n,2);
+  $('legend').innerHTML=parts.map(p=>`<div class="leg ${p.l==='I keep'?'keep':''}"><i style="background:${p.c}"></i><span>${p.l}</span><b class="num">${rm(p.v,2)}</b></div>`).join('');
+  $('dnCaption').textContent=o.keep>0?`Out of ${rm(price,2)}, you keep ${rm(o.keep/n,2)}.`:`Out of ${rm(price,2)}, you lose ${rm(-o.keep/n,2)}.`;
 }
 
-function renderUnit(M){
-  const cols=[['1 pair',M.types[0]],['2 pairs',M.types[1]],['3 pairs',M.types[2]],['Typical order',M.avg]];
-  const r=(lab,f,cls='')=>`<tr class="${cls}"><td>${lab}</td>${cols.map(([,o],i)=>`<td class="${i===3?'hl':''}">${f(o)}</td>`).join('')}</tr>`;
-  $('unitTbl').innerHTML=`<thead><tr><th>For one order of…</th>${cols.map(([n],i)=>`<th class="${i===3?'hl':''}">${n}</th>`).join('')}</tr></thead><tbody>
-  ${r('Customer pays',o=>rm(o.price,2))}
-  ${r('Factory price (in yuan)',o=>`<span class="muted">RMB ${nf(o.n*S.inputs.unitCostRMB,2)}</span>`)}
-  ${r('Socks, incl. shipping from China',o=>rm(-o.product,2))}
-  ${r('Packaging',o=>rm(-o.pack,2))}
-  ${r('Delivery to customer',o=>rm(-o.ship,2))}
-  ${r('Shopee / TikTok / card fees',o=>rm(-o.fees,2))}
-  ${r('Left before ads',o=>`${rm(o.cmB,2)} <span class="muted">(${pc(o.price?o.cmB/o.price:0)})</span>`,'em')}
-  ${r('Ads (averaged over all orders)',o=>rm(-o.ads,2))}
-  ${r('You keep',o=>`${rm(o.cmA,2)} <span class="muted">(${pc(o.price?o.cmA/o.price:0)})</span>`,'em')}
-  ${r('You keep per pair',o=>rm(o.n?o.cmA/o.n:0,2))}
-  </tbody>`;
-  $('be-roas').textContent=`RM ${nf(M.beROAS,2)}  ·  you expect RM ${nf(M.roas,2)}`;
-  $('be-cpa').textContent=rm(M.beCPA,2)+`  ·  you expect ${rm(M.cpa,2)}`;
-  $('be-cpa2').textContent=rm(M.beCPA2,2);
-  const t=[], s=M.types, mA=M.avg.price?M.avg.cmA/M.avg.price:0;
-  t.push([mA>=0.25?'good':mA>=0.1?'warn':'bad',`On a typical order you keep ${rm(M.avg.cmA,2)}, which is ${pc(mA)} of what the customer pays. ${mA>=0.25?'That is healthy for an online brand.':mA>=0.1?'That is thin. If ads get a bit more expensive, it disappears.':'That is too little to pay your monthly bills.'}`]);
-  const best=[0,1,2].reduce((a,i)=>s[i].cmA/s[i].n>s[a].cmA/s[a].n?i:a,0);
-  t.push(['good',best>0?`You make the most per pair on the ${['','2-pair','3-pair'][best]} bundle (${rm(s[best].cmA/s[best].n,2)} a pair), because delivery and ads are shared across more socks. Push bundles in your ads and on your product page.`:`You make the most per pair on single pairs (${rm(s[0].cmA,2)}). Your bundle discounts may be too big.`]);
-  const big=[['the socks',M.avg.product],['delivery',M.avg.ship],['fees',M.avg.fees],['ads',M.avg.ads],['packaging',M.avg.pack]].sort((a,b)=>b[1]-a[1])[0];
-  t.push(['warn',`Your biggest cost on each order is ${big[0]}: ${rm(big[1],2)}, or ${pc(M.avg.price?big[1]/M.avg.price:0)} of the price.`]);
-  if(M.web<40)t.push(['warn',`Only ${nf(M.web)}% of orders come through your own website. Shopee and TikTok take a bigger cut, so fees eat ${pc(M.feeRate,1)} of each sale on average.`]);
-  $('tk-unit').innerHTML=t.map(([c,x])=>`<li><span class="dot ${c}"></span><span>${x}</span></li>`).join('');
-}
-
+/* 5. Chart */
 function smooth(p){
-  if(p.length<2)return'';
-  const n=p.length,m=[],d=[];for(let i=0;i<n-1;i++){d.push((p[i+1][1]-p[i][1])/(p[i+1][0]-p[i][0]))}
-  for(let i=0;i<n;i++){if(i===0)m.push(d[0]);else if(i===n-1)m.push(d[n-2]);else m.push(d[i-1]*d[i]<=0?0:(d[i-1]+d[i])/2)}
+  if(p.length<2)return'';const n=p.length,m=[],d=[];
+  for(let i=0;i<n-1;i++)d.push((p[i+1][1]-p[i][1])/(p[i+1][0]-p[i][0]));
+  for(let i=0;i<n;i++)m.push(i===0?d[0]:i===n-1?d[n-2]:(d[i-1]*d[i]<=0?0:(d[i-1]+d[i])/2));
   let s=`M${p[0][0]},${p[0][1]}`;
   for(let i=0;i<n-1;i++){const h=(p[i+1][0]-p[i][0])/3;s+=` C${p[i][0]+h},${p[i][1]+m[i]*h} ${p[i+1][0]-h},${p[i+1][1]-m[i+1]*h} ${p[i+1][0]},${p[i+1][1]}`}
   return s;
 }
-function renderCash(M){
-  const rows=M.rows, cap=S.inputs.capital;
-  const W=900,H=320,L=70,Rr=20,T=24,Bm=36;
-  const vals=rows.map(r=>r.cash).concat([cap,0]);
-  let lo=Math.min(...vals),hi=Math.max(...vals); const pad=(hi-lo)*0.08||1000; lo-=pad; hi+=pad;
-  const step=niceStep((hi-lo)/4); lo=Math.floor(lo/step)*step; hi=Math.ceil(hi/step)*step;
-  const x=i=>L+(W-L-Rr)*i/Math.max(1,rows.length-1), y=v=>T+(hi-v)/(hi-lo)*(H-T-Bm);
-  const pts=rows.map((r,i)=>[x(i),y(r.cash)]);
-  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Monthly cash position line chart"><defs><linearGradient id="cg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--sky)" stop-opacity=".45"/><stop offset="1" stop-color="var(--sky)" stop-opacity="0"/></linearGradient></defs>`;
-  for(let v=lo;v<=hi+0.1;v+=step){s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="var(--line)" ${Math.abs(v)<0.01?'stroke-width="1.5"':''}/><text x="${L-10}" y="${y(v)+4}" text-anchor="end" font-size="12" fill="var(--muted)">${shortRM(v)}</text>`}
-  rows.forEach((r,i)=>{s+=`<text x="${x(i)}" y="${H-12}" text-anchor="middle" font-size="12" fill="var(--muted)">${i===0?'Start':'M'+r.m}</text>`});
-  s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(cap)}" y2="${y(cap)}" stroke="var(--accent)" stroke-dasharray="5 5" opacity=".7"/><text x="${W-Rr}" y="${y(cap)-8}" text-anchor="end" font-size="12" fill="var(--accent)">What you started with ${shortRM(cap)}</text>`;
-  const path=smooth(pts);
-  s+=`<path d="${path} L${pts[pts.length-1][0]},${H-Bm} L${pts[0][0]},${H-Bm} Z" fill="url(#cg)"/>`;
-  s+=`<path d="${path}" fill="none" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/>`;
-  rows.forEach((r,i)=>{s+=`<circle cx="${x(i)}" cy="${y(r.cash)}" r="${i===rows.length-1?5.5:3.5}" fill="${r.cash<0?'var(--bad)':'var(--card)'}" stroke="var(--accent)" stroke-width="2"/>`});
-  if(M.payback!==null&&M.payback<=M.N){const i=M.payback;s+=`<circle cx="${x(i)}" cy="${y(rows[i].cash)}" r="9" fill="none" stroke="var(--good)" stroke-width="2.5"/><text x="${x(i)}" y="${y(rows[i].cash)-16}" text-anchor="middle" font-size="12.5" font-weight="600" fill="var(--ink)">Money back</text>`}
-  s+=`<line id="cursor" x1="0" x2="0" y1="${T}" y2="${H-Bm}" stroke="var(--muted)" stroke-dasharray="3 3" opacity="0"/>`;
-  s+=`<rect x="${L}" y="${T}" width="${W-L-Rr}" height="${H-T-Bm}" fill="transparent" id="hit"/></svg>`;
-  const host=$('chart'); host.querySelector('svg')?.remove(); host.insertAdjacentHTML('afterbegin',s);
-  const svg=host.querySelector('svg'), tip=$('ctip'), cur=svg.querySelector('#cursor');
-  const move=ev=>{const b=svg.getBoundingClientRect(),px=(ev.clientX-b.left)*W/b.width;const i=Math.max(0,Math.min(rows.length-1,Math.round((px-L)/((W-L-Rr)/Math.max(1,rows.length-1)))));const r=rows[i];
-    cur.setAttribute('x1',x(i));cur.setAttribute('x2',x(i));cur.setAttribute('opacity','.6');
-    tip.innerHTML=`<b>${i===0?'Start (after paying for stock and launch)':'Month '+r.m}</b><br>In the bank: ${rm(r.cash)}${i?`<br>Sold ${nf(r.units)} pairs for ${rm(r.rev)}<br>Spent ${rm(r.ad)} on ads`:''}`;
-    tip.style.left=(x(i)/W*b.width)+'px';tip.style.top=(y(r.cash)/H*b.height)+'px';tip.style.opacity=1;};
-  svg.addEventListener('pointermove',move);svg.addEventListener('pointerleave',()=>{tip.style.opacity=0;cur.setAttribute('opacity','0')});
-  $('recover').textContent=M.payback===null?'At this pace you don\'t get your money back':M.payback<=M.N?`You get your money back in Month ${M.payback}`:`You get your money back in Month ${M.payback}, after the ${M.N} months shown`;
-  $('ti').textContent=rm(M.totalInv);
-  $('beu').textContent=isFinite(M.beUnits)?nf(Math.ceil(M.beUnits))+` of ${nf(M.stock)}`:'Never';
-  $('bem').textContent=M.beMonth===null?'Not reached':'Month '+M.beMonth;
-  const t=[];
-  t.push([M.minCash<0?'bad':'good',M.minCash<0?`You run out of money in Month ${M.minM}. Find ${rm(-M.minCash)} more, order fewer pairs, or spend less on ads.`:`The lowest your bank balance gets is ${rm(M.minCash)}, ${M.minM===0?'right after you pay for stock and launch':'in Month '+M.minM}. You have enough to fund this drop.`]);
-  const limitedByStock=M.demandPairs>M.cap+1;
-  t.push(['warn',limitedByStock?`Your ad budget could sell about ${nf(M.demandPairs)} pairs in ${M.N} months, but you only plan to sell ${nf(M.cap)}. You'll hit your target early and spend less on ads than budgeted.`:`Your ad budget only sells about ${nf(M.demandPairs)} pairs, short of your ${nf(M.cap)}-pair target. Spend more on ads or bring down the ad cost per order.`]);
-  t.push([M.stockLeft>M.stock*0.25?'warn':'good',`At the end you still have ${nf(M.stockLeft)} unsold pairs. You paid ${rm(M.stockLeft*M.landed)} for them, and that money comes back only when they sell.`]);
-  $('tk-cash').innerHTML=t.map(([c,x])=>`<li><span class="dot ${c}"></span><span>${x}</span></li>`).join('');
-}
 function niceStep(r){const p=Math.pow(10,Math.floor(Math.log10(Math.max(r,1)))),f=r/p;return(f<=1?1:f<=2?2:f<=5?5:10)*p}
-function shortRM(v){const a=Math.abs(v);return(v<0?'−':'')+'RM '+(a>=1000?nf(a/1000,a>=10000?0:1)+'k':nf(a))}
-
-function renderScen(R){
-  const K=['worst','base','best'];
-  const rows=[
-    ['Stock sold',m=>nf(m.st*100)+'%'],['Ad cost per order',m=>rm(m.cpa,2)],['Sales from each RM 1 of ads (need / get)',m=>`RM ${nf(m.beROAS,2)} / RM ${nf(m.roas,2)}`],
-    ['Pairs sold',m=>nf(m.T.units)],['Total sales',m=>rm(m.T.rev)],['Sales minus socks & packaging',m=>rm(m.gross)],['Spent on ads',m=>rm(m.T.ad)],
-    ['Profit',m=>rm(m.net),'em'],['Return on your money',m=>pc(m.roi,1),'em'],['Money back by',m=>m.payback===null?'Not reached':'Month '+m.payback+(m.payback>m.N?' (later)':'')],
-    ['In the bank at the end',m=>rm(m.endCash)],['Lowest bank balance',m=>rm(m.minCash)],['Pairs left unsold',m=>nf(m.stockLeft)]
-  ];
-  $('scnTbl').innerHTML=`<thead><tr><th></th>${K.map(k=>`<th class="${k===S.scenario?'hl':''}">${scen(k,S.inputs).name}</th>`).join('')}</tr></thead><tbody>${rows.map(([l,f,c])=>`<tr class="${c||''}"><td>${l}</td>${K.map(k=>`<td class="${k===S.scenario?'hl':''}">${f(R[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
-  const w=R.worst,b=R.base,be=R.best,t=[];
-  t.push([w.net>=0?'good':'bad',w.net>=0?`Even if sales are slow, you still make ${rm(w.net)}.`:`If sales are slow, you lose ${rm(-w.net)}. Make sure you could live with that before you order.`]);
-  t.push(['warn',`Slow vs great is a ${rm(be.net-w.net)} difference in profit. How much stock you sell and what ads cost per order matter more than anything else.`]);
-  t.push([b.roas>=b.beROAS?'good':'bad',b.roas>=b.beROAS?`At RM ${nf(b.cpa,2)} per order, your ads pay for themselves. They stop paying once an order costs more than ${rm(b.beCPA,2)} in ads.`:`At RM ${nf(b.cpa,2)} per order, your ads lose money. You need to get the ad cost per order under ${rm(b.beCPA,2)}.`]);
-  if(w.minCash<0)t.push(['bad',`If sales are slow, your bank balance drops to ${rm(w.minCash)}. Keep some money aside or order fewer pairs the first time.`]);
-  $('tk-scn').innerHTML=t.map(([c,x])=>`<li><span class="dot ${c}"></span><span>${x}</span></li>`).join('');
+function renderChart(M){
+  const rows=M.shown,W=900,H=340,L=70,Rr=30,T=44,B=36;
+  let lo=Math.min(0,...rows.map(r=>r.money)),hi=Math.max(0,...rows.map(r=>r.money));
+  const pad=(hi-lo)*0.1||1000; lo-=pad; hi+=pad;
+  const step=niceStep((hi-lo)/4); lo=Math.floor(lo/step)*step; hi=Math.ceil(hi/step)*step;
+  const x=i=>L+(W-L-Rr)*i/Math.max(1,rows.length-1),y=v=>T+(hi-v)/(hi-lo)*(H-T-B),y0=y(0);
+  const pts=rows.map((r,i)=>[x(i),y(r.money)]),path=smooth(pts);
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Money over time, starting at ${rm(rows[0].money)}"><defs><clipPath id="cAbove"><rect x="0" y="0" width="${W}" height="${y0}"/></clipPath><clipPath id="cBelow"><rect x="0" y="${y0}" width="${W}" height="${H}"/></clipPath></defs>`;
+  for(let v=lo;v<=hi+0.1;v+=step)if(Math.abs(v)>0.01)s+=`<line x1="${L}" x2="${W-Rr}" y1="${y(v)}" y2="${y(v)}" stroke="#F3EEE6"/><text x="${L-10}" y="${y(v)+4}" text-anchor="end" font-size="13" fill="#5F6B7A">${rmS(v)}</text>`;
+  const area=`${path} L${pts[pts.length-1][0]},${y0} L${pts[0][0]},${y0} Z`;
+  s+=`<path d="${area}" fill="#B9FBC0" opacity=".8" clip-path="url(#cAbove)"/><path d="${area}" fill="#FFC8DD" opacity=".8" clip-path="url(#cBelow)"/>`;
+  s+=`<line x1="${L}" x2="${W-Rr}" y1="${y0}" y2="${y0}" stroke="#2D3748" stroke-width="1.5" stroke-dasharray="5 5" opacity=".55"/><text x="${L-10}" y="${y0+4}" text-anchor="end" font-size="13" font-weight="800" fill="#2D3748">RM 0</text>`;
+  s+=`<path d="${path}" fill="none" stroke="#5B8DC9" stroke-width="4" stroke-linecap="round"/>`;
+  rows.forEach((r,i)=>{s+=`<circle cx="${x(i)}" cy="${y(r.money)}" r="5" fill="#fff" stroke="#5B8DC9" stroke-width="2.5"/><text x="${x(i)}" y="${H-10}" text-anchor="middle" font-size="13" fill="#5F6B7A">${i===0?'Start':'M'+r.m}</text>`});
+  if(M.payback!==null&&M.payback<rows.length){const i=M.payback,px=x(i),py=y(rows[i].money);
+    s+=`<circle cx="${px}" cy="${py}" r="11" fill="none" stroke="#23703B" stroke-width="3"/><text x="${Math.min(px,W-80)}" y="${py-22}" text-anchor="middle" font-size="16" font-weight="900" fill="#23703B">🎉 Money back!</text>`}
+  s+=`<line id="cursor" x1="0" x2="0" y1="${T}" y2="${H-B}" stroke="#5F6B7A" stroke-dasharray="3 3" opacity="0"/></svg>`;
+  const host=$('chart'); host.querySelector('svg')?.remove(); host.insertAdjacentHTML('afterbegin',s);
+  const svg=host.querySelector('svg'),tip=$('ctip'),cur=svg.querySelector('#cursor');
+  svg.addEventListener('pointermove',ev=>{const b=svg.getBoundingClientRect(),px=(ev.clientX-b.left)*W/b.width;const i=Math.max(0,Math.min(rows.length-1,Math.round((px-L)/((W-L-Rr)/Math.max(1,rows.length-1)))));const r=rows[i];
+    cur.setAttribute('x1',x(i));cur.setAttribute('x2',x(i));cur.setAttribute('opacity','.6');
+    tip.innerHTML=`<b>${i===0?'Start':'Month '+r.m}</b><br>${r.money<0?'Still to get back: '+rm(-r.money):'Ahead by: '+rm(r.money)}<br>${i?'Sold '+nf(r.units)+' pairs':'Stock and start-up paid'}`;
+    tip.style.left=(x(i)/W*b.width)+'px';tip.style.top=(y(r.money)/H*b.height)+'px';tip.style.opacity=1});
+  svg.addEventListener('pointerleave',()=>{tip.style.opacity=0;cur.setAttribute('opacity','0')});
+  const p=$('backPill');
+  if(M.payback===null){p.textContent='😟 Not paid back at this pace';p.style.background='var(--red-t)'}
+  else{p.textContent=`🎉 Money back in Month ${M.payback}`;p.style.background='var(--mint)'}
 }
 
-const TF=[['orders','Orders',0,1],['revenue','Sales (RM)',0,1],['ad','Spent on ads',0,-1],['units','Pairs sold',0,1]];
-function variance(a,p,dir){if(a==null||!isFinite(a)||!p)return'<span class="var none">–</span>';const v=(a-p)/p;const good=dir>0?v>=0:v<=0;return`<span class="var ${good?'good':'bad'}">${v>=0?'+':'−'}${nf(Math.abs(v)*100)}%</span>`}
-function renderTracker(onlyVariance){
-  const B=runAll().base, rows=B.rows.slice(1);
-  const planOf=r=>({orders:r.orders,revenue:r.rev,ad:r.ad,units:r.units});
-  if(!onlyVariance||!$('trkTbl').querySelector('tbody')||$('trkTbl').querySelectorAll('tbody tr').length!==rows.length+1){
-    const focusId=document.activeElement?.id;
-    $('trkTbl').innerHTML=`<thead><tr><th></th>${TF.map(f=>`<th class="grp sep" colspan="3">${f[1]}</th>`).join('')}</tr><tr><th>Month</th>${TF.map(()=>`<th class="sep">Plan</th><th>Real</th><th>Diff</th>`).join('')}</tr></thead><tbody>${rows.map(r=>{const p=planOf(r),a=S.track[r.m]||{};return`<tr><td>Month ${r.m}</td>${TF.map(([k,,,d])=>`<td class="plan sep">${k==='revenue'||k==='ad'?rm(p[k]):nf(p[k])}</td><td><input id="trk-${r.m}-${k}" type="number" inputmode="decimal" aria-label="Month ${r.m} actual ${k}" data-trk="${r.m}.${k}" value="${a[k]??''}" placeholder="–"></td><td id="v-${r.m}-${k}">${variance(a[k],p[k],d)}</td>`).join('')}</tr>`}).join('')}<tr class="em" id="trk-total"></tr></tbody>`;
-    if(focusId&&$(focusId))$(focusId).focus();
+/* 6. What if */
+function renderWhatIf(R){
+  const sw=S.inputs.swing;
+  const card=(k,face,t,desc)=>{const m=R[k];return `<div class="wi ${k}"><span class="face" aria-hidden="true">${face}</span><h3>${t}</h3><p class="desc">${desc}</p>
+    <div class="stat"><small>Profit after ${monthWord(m.N)}</small><b class="num" style="color:${m.profitN>=0?'var(--mint-i)':'var(--pink-i)'}">${rm(m.profitN)}</b></div>
+    <div class="stat"><small>Money back</small><b class="num">${m.payback===null?'Not yet':'Month '+m.payback}</b></div></div>`};
+  $('whatif').innerHTML=card('bad','😟','Bad month',`Sales ${sw}% slower and ads ${sw}% more expensive.`)+card('mid','🙂','Normal month','Exactly the numbers you typed in.')+card('great','🤩','Great month',`Sales ${sw}% faster and ads ${sw}% cheaper.`);
+}
+
+/* 7. Check-in */
+const CK=[['orders','Orders',1,v=>nf(v)],['revenue','Sales (RM)',1,v=>rm(v)],['ad','Ad spend (RM)',-1,v=>rm(v)]];
+function ckIcon(a,p,dir){if(a==null||!isFinite(a)||!p)return'';return(dir>0?a>=p:a<=p)?'<span title="Beat the plan">✅</span>':'<span title="Behind the plan">❌</span>'}
+function renderCheckin(onlyIcons){
+  const M=runAll().mid,rows=M.rows.slice(1,M.N+1),plan=r=>({orders:r.orders,revenue:r.rev,ad:r.ad});
+  if(!onlyIcons||$('ckTbl').querySelectorAll('tbody tr').length!==rows.length){
+    const f=document.activeElement?.id;
+    $('ckTbl').innerHTML=`<thead><tr><th>Month</th>${CK.map(c=>`<th>${c[1]}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>{const p=plan(r),a=S.track[r.m]||{};
+      return `<tr><td><b>Month ${r.m}</b></td>${CK.map(([k,,d,fmt])=>`<td><div class="ck"><input id="ck-${r.m}-${k}" type="number" inputmode="decimal" aria-label="Month ${r.m} real ${k}" data-ck="${r.m}.${k}" value="${a[k]??''}" placeholder="–"><span class="st" id="st-${r.m}-${k}">${ckIcon(a[k],p[k],d)}</span></div><span class="plan">Plan: ${fmt(p[k])}</span></td>`).join('')}</tr>`}).join('')}</tbody>`;
+    if(f&&$(f))$(f).focus();
   }
-  // variances + totals
-  const tot={p:{orders:0,revenue:0,ad:0,units:0},a:{orders:0,revenue:0,ad:0,units:0}}; let logged=0;
-  rows.forEach(r=>{const p=planOf(r),a=S.track[r.m]||{};TF.forEach(([k,,,d])=>{const c=$(`v-${r.m}-${k}`);if(c)c.innerHTML=variance(a[k],p[k],d)});
-    if(Object.keys(a).length){logged++;TF.forEach(([k])=>{tot.p[k]+=p[k];if(a[k]!=null)tot.a[k]+=a[k]})}});
-  $('trk-total').innerHTML=`<td>Total so far</td>${TF.map(([k,,,d])=>`<td class="plan sep">${logged?(k==='revenue'||k==='ad'?rm(tot.p[k]):nf(tot.p[k])):'–'}</td><td>${logged?(k==='revenue'||k==='ad'?rm(tot.a[k]):nf(tot.a[k])):'–'}</td><td>${logged?variance(tot.a[k],tot.p[k],d):'<span class="var none">–</span>'}</td>`).join('')}`;
-  // insights
+  const tot={a:{orders:0,revenue:0,ad:0},p:{orders:0,revenue:0,ad:0}}; let logged=0;
+  rows.forEach(r=>{const p=plan(r),a=S.track[r.m]||{};CK.forEach(([k,,d])=>{const c=$(`st-${r.m}-${k}`);if(c)c.innerHTML=ckIcon(a[k],p[k],d)});
+    if(Object.keys(a).length){logged++;CK.forEach(([k])=>{tot.p[k]+=p[k];if(a[k]!=null)tot.a[k]+=a[k]})}});
   const t=[];
-  if(!logged)t.push(['','Type your first month\'s real numbers into the "Real" boxes. Tips show up here once there is something to compare.']);
+  if(!logged)t.push("📝 Type in your first month's real numbers. A tip will show up here.");
   else{
-    const A=tot.a,P=tot.p, org=B.org;
-    if(A.orders>0&&A.ad>0){const cpaA=A.ad/(A.orders*(1-org)),v=(cpaA-B.cpa)/B.cpa;
-      t.push([v>0.1?'bad':v<-0.1?'good':'warn',v>0.1?`Each order is costing ${rm(cpaA,2)} in ads, ${nf(v*100)}% more than the ${rm(B.cpa,2)} you planned. Try new ad photos or videos, or a different audience.`:v<-0.1?`Each order is costing only ${rm(cpaA,2)} in ads, ${nf(-v*100)}% less than planned. Your ads are working, so it may be worth spending a bit more.`:`Each order is costing ${rm(cpaA,2)} in ads, close to plan.`]);
-      if(cpaA>B.beCPA2)t.push(['bad',`At ${rm(cpaA,2)} per order, ads cost more than an order earns (the limit is ${rm(B.beCPA2,2)}). You're losing money on orders that come from ads.`]);}
-    if(A.orders>0){const aovA=A.revenue/A.orders,v=(aovA-B.aov)/B.aov;t.push(Math.abs(v)<0.03?['good',`People spend ${rm(aovA,2)} per order on average, as planned.`]:[v>=0?'good':'warn',v>=0?`People spend ${rm(aovA,2)} per order on average, ${nf(v*100)}% more than planned. Bundles are working.`:`People spend ${rm(aovA,2)} per order on average, ${nf(-v*100)}% less than planned. Push the 2- and 3-pair bundles harder.`]);}
+    const A=tot.a,P=tot.p;
+    if(A.orders>0&&A.ad>0){const cpaA=A.ad/(A.orders*(1-M.org)),v=(cpaA-M.cpa)/M.cpa;
+      t.push(v>0.1?`📢 Ads cost more than planned (${rm(cpaA,2)} per order instead of ${rm(M.cpa,2)}). Try new video ads or a different audience.`:v<-0.1?`🎯 Ads cost less than planned (${rm(cpaA,2)} per order). They're working, so you could spend a bit more.`:`👍 Your ad cost per order (${rm(cpaA,2)}) is right on plan.`)}
     const rv=P.revenue?(A.revenue-P.revenue)/P.revenue:0;
-    t.push([rv>=0?'good':'bad',rv>=0?`Sales are ${nf(rv*100)}% ahead of plan over ${logged} month${logged>1?'s':''}.`:`Sales are ${nf(-rv*100)}% behind plan over ${logged} month${logged>1?'s':''}. At this pace it takes longer to get your money back.`]);
+    t.push(rv>=0?`🌟 Sales are ${nf(rv*100)}% ahead of plan. Keep doing what you're doing.`:`🐢 Sales are ${nf(-rv*100)}% behind plan. Post more often and push the 2-pair bundle.`);
   }
-  $('tk-trk').innerHTML=t.map(([c,x])=>`<li><span class="dot ${c}"></span><span>${x}</span></li>`).join('');
+  $('ckTips').innerHTML=t.slice(0,2).map(x=>`<p>${x}</p>`).join('');
 }
 function renderExBadge(){$('exBadge').innerHTML=S.examples&&Object.keys(S.track).length?`<span class="ex-badge">Months 1 and 2 are example numbers <button id="clearEx" type="button">Clear</button></span>`:''}
+
+/* 8. Tips */
+function renderTips(M){
+  const I=S.inputs,t=[],s=M.types,k1=s[0].keep,k2=s[1].keep/2;
+  if(k2>k1+0.5)t.push(['🧦',`Sell in bundles of 2 to keep more per pair: ${rm(k2,2)} a pair on a bundle vs ${rm(k1,2)} on a single, because delivery and ads are shared.`]);
+  else t.push(['🏷️',`Your 2-pair bundle gives you less per pair (${rm(k2,2)}) than a single (${rm(k1,2)}). Make the bundle discount a little smaller.`]);
+  if(M.adNeedPM>I.adBudget*1.05)t.push(['📢',`Your ad budget of ${rm(I.adBudget)} only gets about ${nf(M.cpa>0?I.adBudget/M.cpa/(1-M.org):0)} orders a month. To sell ${nf(M.pairsPM)} pairs you'd need about ${rm(M.adNeedPM)}.`]);
+  else t.push(['📢',`Start with a small ad test (about RM 300 to 500) to see your real ad cost per order before spending the full ${rm(I.adBudget)}.`]);
+  if(isFinite(M.sellOut)&&M.sellOut>M.N+0.5)t.push(['📦',`At ${nf(M.pairsPM)} pairs a month, your ${nf(M.stock)} pairs take about ${monthWord(Math.round(M.sellOut))} to sell. Ask your supplier if you can start with a smaller first order.`]);
+  else if(isFinite(M.sellOut))t.push(['📦',`You could sell out in about ${monthWord(Math.max(1,Math.round(M.sellOut)))}. Reorder about a month before so you don't run out.`]);
+  const big=[['the socks',M.avg.supplier],['delivery',M.avg.ship],['platform fees',M.avg.fees],['ads',M.avg.ads],['packaging',M.avg.pack]].sort((a,b)=>b[1]-a[1])[0];
+  if(big[0]==='delivery')t.push(['🚚',`Delivery is your biggest cost per order (${rm(big[1],2)}). Try free delivery only above a minimum spend, like 2 pairs.`]);
+  else if(big[0]==='ads')t.push(['📱',`Ads are your biggest cost per order (${rm(big[1],2)}). Free posts on TikTok and Instagram, and Pilates studio partners, bring orders with no ad cost.`]);
+  else t.push(['💡',`Your biggest cost per order is ${big[0]} (${rm(big[1],2)}). Small savings there add up fastest.`]);
+  if(I.savings>0&&M.need>I.savings)t.unshift(['💵',`You need ${rm(M.need)} to start but have ${rm(I.savings)}. Order fewer pairs or cut start-up costs.`]);
+  $('tips').innerHTML=t.slice(0,4).map(([e,x])=>`<li><span class="e" aria-hidden="true">${e}</span><span>${x}</span></li>`).join('');
+}
 
 /* ---------- Save: private store if available, plus this device ---------- */
 let dbDoc=null,saveT=null,writing=Promise.resolve();
@@ -771,42 +689,36 @@ function save(){
     const snap=await Promise.race([dbDoc.get(),new Promise((_,r)=>setTimeout(()=>r('timeout'),10000))]);
     const d=snap.exists!==false?snap.data():null;
     if(d&&d.state&&(d.updatedAt||0)>(S.updatedAt||0)){
-      S=migrate(Object.assign(S,d.state,{inputs:Object.assign(clone(DEFAULTS),d.state.inputs||{})}));
+      const wasOld=(d.state.dv||1)<DV;
+      S=migrate(Object.assign(S,d.state));
       try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}
       $('dropName').value=S.drop; buildInputs(); update();
+      if(wasOld)save();
     }else if(S.updatedAt){save()}
     saveLbl('Saved');
   }catch(e){saveLbl('Saved on this device')}
 })();
 
-/* ---------- Advisor (asks Claude with the viewer's own account) ---------- */
+/* ---------- Ask an expert (uses the viewer's own Claude account) ---------- */
 const ARTIFACT_URL='https://claude.ai/artifact/PQoyAAv2gD1E628VEFwF3G';
-let advSample=null, advTurns=[], advCtl=null, advBusy=false;
-const advReady=(async()=>{
-  try{ if(!window.claude?.use) return null; advSample=await claude.use('sample'); return advSample; }catch(e){ return null }
-})();
-function advOff(msg){
-  $('advChips').hidden=true; $('advForm').hidden=true; $('advClear').hidden=true;
-  $('advNote').innerHTML=msg;
-  $('advNote').className='adv-off';
-}
-advReady.then(s=>{ if(!s) advOff(`The advisor works when you open this dashboard inside Claude: <a href="${ARTIFACT_URL}" target="_blank" rel="noopener">open it in Claude</a>.`) });
-
+let advSample=null,advTurns=[],advCtl=null,advBusy=false;
+const advReady=(async()=>{try{if(!window.claude?.use)return null;advSample=await claude.use('sample');return advSample}catch(e){return null}})();
+function advOff(msg){$('advChips').hidden=true;$('advForm').hidden=true;$('advClear').hidden=true;$('advNote').innerHTML=msg;$('advNote').className='adv-off'}
+advReady.then(s=>{if(!s)advOff(`The expert works when you open this page inside Claude: <a href="${ARTIFACT_URL}" target="_blank" rel="noopener">open it in Claude</a>.`)});
 function advFacts(){
-  const R=runAll(), b=R.base, w=R.worst, g=R.best, I=S.inputs;
-  const list=a=>a.map(r=>`${r.n} RM ${nf(+r.v||0)}`).join(', ');
+  const R=runAll(),m=R.mid,I=S.inputs,list=a=>a.map(r=>`${r.n} RM ${nf(+r.v||0)}`).join(', ');
   return [
     `Brand / drop: ${S.drop}. Product: Pilates grip socks, sold in Malaysia.`,
-    `Prices: 1 pair RM ${nf(I.price1,2)}, 2 pairs RM ${nf(I.price2,2)}, 3 pairs RM ${nf(I.price3,2)}. ${I.bundlePct}% of orders are bundles; ${I.threeShare}% of bundle buyers pick 3 pairs.`,
-    `Factory price RMB ${nf(I.unitCostRMB,2)} a pair (= RM ${nf(I.unitCost,2)} at RM ${I.fx} per RMB). Shipping from China + import RM ${nf(I.freight,2)} a pair (an estimate, no quote yet). Packaging RM ${nf(I.packaging,2)} a pair. Delivery to customer RM ${nf(I.shipping,2)} an order, ${I.shipMode==='absorbed'?'paid by the founder (free shipping for the customer)':'paid by the customer'}.`,
-    `Where the founder sells: own website ${nf(b.web)}% of orders (card fee ${I.gateway}%), Shopee ${I.shopeePct}% (fees ${I.shopeeFee}%), TikTok Shop ${I.tiktokPct}% (fees ${I.tiktokFee}%).`,
-    `Stock: ${I.moqPerSize} pairs per size x ${I.sizes} sizes = ${nf(b.stock)} pairs, costing RM ${nf(b.invCost)} landed. The founder expects to sell ${I.sellThrough}% of it in ${b.N} months.`,
-    `One-time launch costs: ${list(S.launch)} (total RM ${nf(b.launchTotal)}).`,
-    `Monthly bills: ${list(S.fixed)} (total RM ${nf(b.fixedMonthly)} a month).`,
-    `Ads: budget up to RM ${nf(I.adBudget)} a month, expected ad cost per order RM ${nf(I.cpa,2)}, ${I.organic}% of orders expected without ads.`,
-    `Starting cash: RM ${nf(I.capital)}.`,
-    `Dashboard results, expected case: typical order RM ${nf(b.aov,2)} (${nf(b.ppo,2)} pairs). Per typical order the founder keeps RM ${nf(b.avg.cmB,2)} before ads and RM ${nf(b.avg.cmA,2)} after ads (${pc(b.avg.cmA/b.aov)} of the price). Ads stop paying above RM ${nf(b.beCPA,2)} per order. Over ${b.N} months: ${nf(b.T.units)} pairs sold, sales RM ${nf(b.T.rev)}, ad spend RM ${nf(b.T.ad)}, profit RM ${nf(b.net)}, return on money ${pc(b.roi)}, money back by ${b.payback?'month '+b.payback:'never at this pace'}, lowest bank balance RM ${nf(b.minCash)}.`,
-    `Slow case (ad cost +${I.cpaSwing}%, ${I.worstST}% of stock sold): profit RM ${nf(w.net)}. Great case (ad cost -${I.cpaSwing}%, ${I.bestST}% sold): profit RM ${nf(g.net)}.`
+    `Prices: 1 pair RM ${nf(I.price1,2)}, 2 pairs RM ${nf(I.price2,2)}, 3 pairs RM ${nf(I.price3,2)}. ${I.bundlePct}% of orders are bundles.`,
+    `Planned sales: ${nf(I.pairsPerMonth)} pairs a month (about ${nf(m.ordersPM)} orders).`,
+    `Supplier price RMB ${nf(I.unitCostRMB,2)} a pair (= RM ${nf(m.unitCost,2)} at RM ${I.fx} per RMB). Shipping from China + import RM ${nf(I.freight,2)} a pair (an estimate, no quote yet). Packaging RM ${nf(I.packaging,2)} a pair. Delivery to customer RM ${nf(I.shipping,2)} an order, ${I.shipMode==='absorbed'?'paid by the founder (free delivery for the customer)':'paid by the customer'}.`,
+    `Where the founder sells: own website ${nf(m.web)}% of orders (card fee ${I.gateway}%), Shopee ${I.shopeePct}% (fees ${I.shopeeFee}%), TikTok Shop ${I.tiktokPct}% (fees ${I.tiktokFee}%).`,
+    `First stock order (MOQ): ${nf(m.stock)} pairs costing RM ${nf(m.invCost)}.`,
+    `Start-up costs: ${list(S.launch)} (total RM ${nf(m.launchT)}). Monthly bills: ${list(S.fixed)} (total RM ${nf(m.fixedM)} a month).`,
+    `Ads: budget RM ${nf(I.adBudget)} a month, expected ad cost to get 1 order RM ${nf(I.cpa,2)}, ${I.organic}% of orders expected without ads. The planned sales need about RM ${nf(m.adNeedPM)} of ads a month.`,
+    `Money saved for this: RM ${nf(I.savings)}.`,
+    `Dashboard results (normal case): money needed to start RM ${nf(m.need)}. Keeps RM ${nf(m.keepPair,2)} per pair after socks, packaging, delivery, fees and ads. Money back in ${m.payback?'month '+m.payback:'never at this pace'}. Profit after ${m.N} months RM ${nf(m.profitN)}.`,
+    `Bad month (sales -${I.swing}%, ads +${I.swing}%): profit RM ${nf(R.bad.profitN)}. Great month (sales +${I.swing}%, ads -${I.swing}%): profit RM ${nf(R.great.profitN)}.`
   ].join('\n');
 }
 function advRules(){
@@ -818,7 +730,7 @@ Judge their numbers against what is typical for small Malaysian online brands in
 
 Format your reply like this:
 - First line: a one-sentence answer to their question.
-- Then 3 to 6 short bullet points, each starting with "- " and then **Reasonable**, **Check this** or **Risky** in bold, followed by the point.
+- Then 3 to 6 short bullet points, each starting with "- " and then **Looks fine**, **Check this** or **Risky** in bold, followed by the point.
 - Last line: "Next step:" and one concrete action.
 Keep it under 220 words. No headings, no tables, no emojis.
 
@@ -826,25 +738,17 @@ Their current numbers from the dashboard (these update every time they ask):
 ${advFacts()}`;
 }
 function advMd(t){
-  const inline=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
-  let out='',list=false;
-  for(const raw of t.split('\n')){
-    const line=raw.trim();
-    const li=line.match(/^([-*•]|\d+[.)])\s+(.*)/);
-    if(li){ if(!list){out+='<ul>';list=true} out+=`<li>${inline(li[2])}</li>`; continue; }
-    if(list){out+='</ul>';list=false}
-    if(line) out+=`<p>${inline(line)}</p>`;
-  }
+  const inline=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');let out='',list=false;
+  for(const raw of t.split('\n')){const line=raw.trim(),li=line.match(/^([-*•]|\d+[.)])\s+(.*)/);
+    if(li){if(!list){out+='<ul>';list=true}out+=`<li>${inline(li[2])}</li>`;continue}
+    if(list){out+='</ul>';list=false}if(line)out+=`<p>${inline(line)}</p>`}
   return out+(list?'</ul>':'');
 }
 function advBubble(cls,html){const d=document.createElement('div');d.className='bub '+cls;d.innerHTML=html;$('advLog').append(d);return d}
-function advSetBusy(on){
-  advBusy=on; $('advSend').disabled=on; $('advStop').hidden=!on;
-  document.querySelectorAll('#advChips .chip').forEach(c=>c.disabled=on);
-}
+function advSetBusy(on){advBusy=on;$('advSend').disabled=on;$('advStop').hidden=!on;document.querySelectorAll('#advChips .chip').forEach(c=>c.disabled=on)}
 async function advAsk(q){
-  q=q.trim(); if(!q||advBusy) return;
-  const sample=advSample||await advReady; if(!sample) return;
+  q=q.trim(); if(!q||advBusy)return;
+  const sample=advSample||await advReady; if(!sample)return;
   advBubble('me',esc(q)); $('advInput').value=''; $('advClear').hidden=false;
   const bub=advBubble('ai wait','Reading your numbers…');
   advTurns.push({role:'user',content:q});
@@ -855,34 +759,18 @@ async function advAsk(q){
     bub.className='bub ai'; bub.innerHTML=advMd(text)+(truncated?'<p class="muted">(The answer was cut short. Ask a narrower question for the rest.)</p>':'');
     advTurns.push({role:'assistant',content:text});
   }catch(e){
-    advTurns.pop();
-    const code=e&&e.code;
-    if(code==='cancelled'){ bub.className='bub ai'; bub.innerHTML=e.text?advMd(e.text)+'<p class="muted">(Stopped.)</p>':'<p class="muted">Stopped.</p>'; }
-    else if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(code)){ bub.remove(); advOff('The advisor needs permission to use Claude. Reload the page and choose Allow when Claude asks, to turn it on.'); }
-    else{ bub.className='bub ai err'; bub.innerHTML=(e&&e.text?advMd(e.text):'')+`<p>${code==='rate_limited'?'Too many questions in a short time. Wait a minute and ask again.':code==='session_expired'?'You have been signed out of Claude. Sign in again, then ask.':code==='refused'?'The advisor could not answer that one. Try asking it a different way.':'Something went wrong getting an answer. Try asking again.'}</p>`; }
-  }finally{ advSetBusy(false); advCtl=null; }
+    advTurns.pop(); const code=e&&e.code;
+    if(code==='cancelled'){bub.className='bub ai';bub.innerHTML=e.text?advMd(e.text)+'<p class="muted">(Stopped.)</p>':'<p class="muted">Stopped.</p>'}
+    else if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(code)){bub.remove();advOff('The expert needs permission to use Claude. Reload the page and choose Allow when Claude asks.')}
+    else{bub.className='bub ai err';bub.innerHTML=(e&&e.text?advMd(e.text):'')+`<p>${code==='rate_limited'?'Too many questions in a short time. Wait a minute and ask again.':code==='session_expired'?'You have been signed out of Claude. Sign in again, then ask.':code==='refused'?'The expert could not answer that one. Try asking it a different way.':'Something went wrong getting an answer. Try asking again.'}</p>`}
+  }finally{advSetBusy(false);advCtl=null}
 }
-$('advChips').addEventListener('click',e=>{const c=e.target.closest('.chip'); if(c) advAsk(c.dataset.q)});
-$('advForm').addEventListener('submit',e=>{e.preventDefault(); advAsk($('advInput').value)});
+$('advChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c)advAsk(c.dataset.q)});
+$('advForm').addEventListener('submit',e=>{e.preventDefault();advAsk($('advInput').value)});
 $('advStop').addEventListener('click',()=>advCtl?.abort());
-$('advClear').addEventListener('click',()=>{ if(advBusy) advCtl?.abort(); advTurns=[]; $('advLog').innerHTML=''; $('advClear').hidden=true; });
+$('advClear').addEventListener('click',()=>{if(advBusy)advCtl?.abort();advTurns=[];$('advLog').innerHTML='';$('advClear').hidden=true});
 
-/* ---------- Theme toggle ---------- */
-const root=document.documentElement;
-try{const th=localStorage.getItem('gripsock-theme');if(th)root.dataset.theme=th}catch(e){}
-$('themeBtn').addEventListener('click',()=>{const dark=root.dataset.theme?root.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;root.dataset.theme=dark?'light':'dark';try{localStorage.setItem('gripsock-theme',root.dataset.theme)}catch(e){};drawClouds()});
-
-/* ---------- Header clouds ---------- */
-function drawClouds(){
-  const c=$('clouds'),r=c.getBoundingClientRect(),dpr=devicePixelRatio||1;c.width=r.width*dpr;c.height=r.height*dpr;
-  const g=c.getContext('2d');g.scale(dpr,dpr);g.clearRect(0,0,r.width,r.height);
-  const col=getComputedStyle(root).getPropertyValue('--sky').trim()||'#A7C7E7';g.fillStyle=col;
-  const puff=(x,y,s,a)=>{g.globalAlpha=a;g.beginPath();[[0,0,1],[0.9,-0.35,1.25],[1.9,0,0.95],[0.9,0.25,1]].forEach(([dx,dy,k])=>{g.moveTo(x+dx*s+s*k,y+dy*s);g.arc(x+dx*s,y+dy*s,s*k,0,Math.PI*2)});g.fill()};
-  const W=r.width;puff(W*0.62,34,22,.18);puff(W*0.82,78,30,.14);puff(W*0.45,r.height-18,26,.10);puff(W*0.95,22,16,.16);
-}
-
-/* ---------- Boot ---------- */
+/* ---------- Start ---------- */
 $('dropName').value=S.drop;
-buildInputs(); update(); drawClouds();
-addEventListener('resize',()=>{clearTimeout(window._rz);window._rz=setTimeout(drawClouds,150)});
+buildInputs(); update();
 </script>
