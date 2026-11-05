@@ -119,6 +119,16 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:28px}
 .x{border:0;background:transparent;color:var(--muted);font-size:20px;width:34px;height:34px;border-radius:10px}
 .x:hover{background:rgba(255,255,255,.8)}
 .add{border:2px dashed rgba(0,0,0,.12);background:rgba(255,255,255,.5);border-radius:12px;padding:8px 14px;font-size:14px;font-weight:800;color:var(--ink)}
+.crow{background:rgba(255,255,255,.7);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.crow .r1{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:8px;align-items:center}
+.crow .r2{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.crow .amt{flex:0 0 150px}
+.crow select{font:inherit;font-size:14px;font-weight:700;color:var(--ink);background:var(--field);border:0;box-shadow:inset 0 0 0 1.5px var(--line);border-radius:12px;height:44px;padding:0 10px}
+.crow .amt select{box-shadow:none;height:auto;padding:0 2px;background:transparent;color:var(--muted)}
+.crow .cv{font-size:13px;color:var(--muted)}
+.crow .cv b{color:var(--ink)}
+.crow .upf{display:flex;align-items:center;gap:8px;font-size:13px;color:#46505E;font-weight:600;cursor:pointer}
+.crow .upf input{width:18px;height:18px;accent-color:var(--accent)}
 .total{font-size:14px;color:var(--muted)}
 .total b{color:var(--ink);font-size:16px}
 .btn{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:800}
@@ -327,14 +337,21 @@ tbody tr+tr td{border-top:1px solid var(--line)}
 /* ---------- Example numbers ---------- */
 const D={
   price1:70, price2:129, price3:179, bundlePct:35, threeShare:40, pairsPerMonth:150,
-  unitCostRMB:5, fx:0.62, freight:1.5, packaging:1.2, shipping:7, shipMode:'absorbed',
-  gateway:2.5, shopeePct:35, tiktokPct:25, shopeeFee:18, tiktokFee:14,
+  fx:0.62, gateway:2.5, shopeePct:35, tiktokPct:25, shopeeFee:18, tiktokFee:14,
   moq:1000, adBudget:2000, cpa:22, organic:30, months:6, savings:20000, swing:30
 };
 const DEF_LAUNCH=[{n:'Samples',v:600},{n:'Design & logo',v:800},{n:'Photoshoot',v:1500},{n:'Other',v:500}];
 const DEF_FIXED=[{n:'Website (Shopify)',v:170},{n:'Domain',v:6},{n:'Apps & subscriptions',v:80},{n:'Other',v:100}];
 const EX_TRACK={1:{orders:92,revenue:8890,ad:1720},2:{orders:108,revenue:10650,ad:1580}};
-const DV=3;
+/* Costs for each sale. cur: RM or RMB. per: 'pair', 'order' or 'pct' (% of the price). up: paid when ordering stock. */
+const costsFrom=o=>[
+  {n:'Socks from supplier',v:o.unitCostRMB??5,cur:'RMB',per:'pair',up:true},
+  {n:'Shipping from China + import',v:o.freight??1.5,cur:'RM',per:'pair',up:true},
+  {n:'Packaging',v:o.packaging??1.2,cur:'RM',per:'pair',up:false},
+  {n:o.shipMode==='charged'?'Delivery to customer (customer pays)':'Delivery to customer',v:o.shipMode==='charged'?0:(o.shipping??7),cur:'RM',per:'order',up:false}
+];
+const DEF_COSTS=costsFrom({});
+const DV=4;
 const clone=o=>JSON.parse(JSON.stringify(o));
 
 /* Every input: label, unit, plain-English tip */
@@ -347,11 +364,7 @@ const F={
   price3:{l:'Bundle price (3 pairs)',pre:'RM',min:0,step:1,tip:'What a customer pays for 3 pairs together.'},
   bundlePct:{l:'Customers who buy a bundle',u:'%',min:0,max:100,step:1,tip:'Out of every 100 orders, how many are for 2 or 3 pairs.'},
   threeShare:{l:'Bundle buyers who pick 3 pairs',u:'%',min:0,max:100,step:1,tip:'Out of the bundle orders, how many go for 3 pairs. The rest buy 2.'},
-  unitCostRMB:{l:'Cost per pair from supplier',pre:'RMB',min:0,step:0.1,conv:true,tip:'What your supplier charges for one pair, in yuan as they quoted it. The ringgit amount is shown next to it.'},
-  packaging:{l:'Packaging per pair',pre:'RM',min:0,step:0.1,tip:'Pouch, tag, card and mailer bag for one pair.'},
-  shipping:{l:'Delivery to customer, per order',pre:'RM',min:0,step:0.5,toggle:true,tip:'What the courier charges to send one order.'},
-  fx:{l:'Exchange rate',pre:'RM',u:'per RMB 1',min:0,step:0.01,tip:'How many ringgit you pay for 1 yuan. Use the rate your bank or payment app gives you.'},
-  freight:{l:'Shipping from China + import, per pair',pre:'RM',min:0,step:0.1,tip:'Getting the socks from the factory to you, divided by the number of pairs. RM 1.50 is a guess until a forwarder quotes you.'},
+  fx:{l:'Exchange rate for RMB costs',pre:'RM',u:'per RMB 1',min:0,step:0.01,tip:'How many ringgit you pay for 1 yuan. Any cost you enter in RMB is changed into RM with this rate. Use the rate your bank or payment app gives you.'},
   shopeePct:{l:'Orders on Shopee',u:'%',min:0,max:100,step:1,tip:'Out of every 100 orders, how many happen on Shopee.'},
   tiktokPct:{l:'Orders on TikTok Shop',u:'%',min:0,max:100,step:1,tip:'Out of every 100 orders, how many happen on TikTok Shop. The rest are on your own website.'},
   shopeeFee:{l:"Shopee's cut of each sale",u:'%',min:0,max:40,step:0.5,tip:'Everything Shopee keeps from a sale, as a percentage.'},
@@ -365,7 +378,7 @@ const F={
 };
 const GROUPS=[
   {c:'sky',tag:'💙 Selling',t:'What I sell',main:['price1','price2','pairsPerMonth'],more:['price3','bundlePct','threeShare']},
-  {c:'pink',tag:'💗 Costs',t:'What each pair costs me',main:['unitCostRMB','packaging','shipping'],note:'dv-cost',more:['fx','freight','shopeePct','tiktokPct','shopeeFee','tiktokFee','gateway'],moreNote:'dv-mix'},
+  {c:'pink',tag:'💗 Costs',t:'What each sale costs me',costs:true,main:['fx'],note:'dv-cost',more:['shopeePct','tiktokPct','shopeeFee','tiktokFee','gateway'],moreTitle:'Platform and payment fees',moreNote:'dv-mix'},
   {c:'peach',tag:'🧡 Stock',t:'My first order',main:['moq'],note:'dv-stock'},
   {c:'lav',tag:'💜 Ads',t:'My ads',main:['adBudget','cpa'],note:'dv-ads',more:['organic']},
   {c:'pink',tag:'🌸 Start-up costs',t:'One-time costs',list:'launch',lt:'Total start-up costs'},
@@ -373,20 +386,22 @@ const GROUPS=[
 ];
 
 /* ---------- State, plus moving older saved numbers across ---------- */
-let S={inputs:clone(D),launch:clone(DEF_LAUNCH),fixed:clone(DEF_FIXED),track:clone(EX_TRACK),examples:true,drop:'Drop 01 · Cloud Grip',donut:1,updatedAt:0,dv:DV};
+let S={inputs:clone(D),costs:clone(DEF_COSTS),launch:clone(DEF_LAUNCH),fixed:clone(DEF_FIXED),track:clone(EX_TRACK),examples:true,drop:'Drop 01 · Cloud Grip',donut:1,updatedAt:0,dv:DV};
 const LS='gripsock-dash-v1';
 function migrate(st){
   const old=st.inputs||{};
-  if((st.dv||1)<DV){
-    const keep=['price1','price2','price3','bundlePct','threeShare','unitCostRMB','fx','freight','packaging','shipping','shipMode','gateway','shopeePct','tiktokPct','shopeeFee','tiktokFee','adBudget','cpa','organic','months'];
-    const n=clone(D); keep.forEach(k=>{if(old[k]!=null)n[k]=old[k]});
+  let n=Object.assign(clone(D),old);
+  if((st.dv||1)<3){
+    const keep=['price1','price2','price3','bundlePct','threeShare','fx','gateway','shopeePct','tiktokPct','shopeeFee','tiktokFee','adBudget','cpa','organic','months'];
+    n=clone(D); keep.forEach(k=>{if(old[k]!=null)n[k]=old[k]});
     if(old.capital!=null)n.savings=old.capital;
     if(old.moqPerSize!=null&&old.sizes!=null)n.moq=old.moqPerSize*old.sizes;
     if(old.cpaSwing!=null)n.swing=old.cpaSwing;
-    st.inputs=n;
     if(st.examples!==false)st.track=clone(EX_TRACK);
-  }else st.inputs=Object.assign(clone(D),old);
-  st.dv=DV; if(!st.donut)st.donut=1; return st;
+  }
+  if((st.dv||1)<4||!Array.isArray(st.costs))st.costs=costsFrom(old);
+  ['unitCostRMB','freight','packaging','shipping','shipMode'].forEach(k=>delete n[k]);
+  st.inputs=n; st.dv=DV; if(!st.donut)st.donut=1; return st;
 }
 try{const s=JSON.parse(localStorage.getItem(LS)||'null'); if(s&&s.inputs)S=migrate(Object.assign(S,s));}catch(e){}
 
@@ -401,16 +416,21 @@ const $=id=>document.getElementById(id);
 const monthWord=n=>n+(n===1?' month':' months');
 
 /* ---------- The money model ---------- */
-function model(I,launchT,fixedM,sc){
-  sc=sc||{sales:1,ad:1};
-  const unitCost=I.unitCostRMB*I.fx, landed=unitCost+I.freight;
+const costRM=(c,fx)=>c.per==='pct'?0:(+c.v||0)*(c.cur==='RMB'?fx:1);
+function model(I,launchT,fixedM,sc,costs){
+  sc=sc||{sales:1,ad:1}; costs=costs||S.costs;
   const cpa=I.cpa*sc.ad, org=Math.min(Math.max(I.organic,0),95)/100;
   const b=I.bundlePct/100,p3=I.threeShare/100,mix=[1-b,b*(1-p3),b*p3],prices=[I.price1,I.price2,I.price3];
   const aov=mix[0]*prices[0]+mix[1]*prices[1]+mix[2]*prices[2], ppo=mix[0]+2*mix[1]+3*mix[2];
   const web=Math.max(0,100-I.shopeePct-I.tiktokPct);
   const feeRate=(web*I.gateway+I.shopeePct*I.shopeeFee+I.tiktokPct*I.tiktokFee)/10000;
-  const ship=I.shipMode==='absorbed'?I.shipping:0, adPer=cpa*(1-org);
-  const order=(price,n)=>{const supplier=n*landed,pack=n*I.packaging,fees=price*feeRate,before=price-supplier-pack-ship-fees;return{price,n,supplier,pack,ship,fees,ads:adPer,before,keep:before-adPer}};
+  const adPer=cpa*(1-org);
+  // stock cost per pair = per-pair costs paid when ordering stock
+  const landed=costs.filter(c=>c.per==='pair'&&c.up).reduce((s,c)=>s+costRM(c,I.fx),0);
+  const order=(price,n)=>{
+    const items=costs.map(c=>({n:c.n||'Cost',up:c.per==='pair'&&c.up,v:c.per==='pair'?costRM(c,I.fx)*n:c.per==='order'?costRM(c,I.fx):price*(+c.v||0)/100}));
+    const costSum=items.reduce((s,x)=>s+x.v,0), later=items.filter(x=>!x.up).reduce((s,x)=>s+x.v,0), fees=price*feeRate, before=price-costSum-fees;
+    return{price,n,items,costSum,later,fees,ads:adPer,before,keep:before-adPer}};
   const types=[order(prices[0],1),order(prices[1],2),order(prices[2],3)], avg=order(aov,ppo);
   const stock=Math.max(0,I.moq), invCost=stock*landed, N=Math.max(1,Math.round(I.months));
   const pairsPM=Math.max(0,I.pairsPerMonth*sc.sales);
@@ -420,8 +440,8 @@ function model(I,launchT,fixedM,sc){
   for(let m=1;m<=36;m++){
     const avail=Math.max(0,stock-sold); if(m>N&&avail<=0.01)break;
     const units=ppo>0?Math.min(pairsPM,avail):0, orders=ppo>0?units/ppo:0; sold+=units;
-    const rev=orders*aov, ad=orders*(1-org)*cpa, pack=units*I.packaging, shp=orders*ship, fees=rev*feeRate, cogs=units*landed;
-    const flow=rev-pack-shp-fees-ad-fixedM, profit=flow-cogs;
+    const rev=orders*aov, ad=orders*(1-org)*cpa, later=orders*avg.later, fees=rev*feeRate, cogs=units*landed;
+    const flow=rev-later-fees-ad-fixedM, profit=flow-cogs;
     money+=flow; cum+=profit;
     rows.push({m,money,units,orders,rev,ad});
     if(payback===null&&money>=-0.5)payback=m;
@@ -433,7 +453,7 @@ function model(I,launchT,fixedM,sc){
   const need=-Math.min(...shown.map(r=>r.money));
   const profitN=T.profit-launchT, putIn=invCost+launchT+fixedM*N;
   const ordersPM=ppo>0?pairsPM/ppo:0, adNeedPM=ordersPM*(1-org)*cpa;
-  return{I,sc,unitCost,landed,cpa,org,aov,ppo,web,feeRate,ship,types,avg,stock,invCost,N,pairsPM,rows,shown,payback,profitMonth,need,profitN,putIn,
+  return{I,sc,landed,cpa,org,aov,ppo,web,feeRate,types,avg,stock,invCost,N,pairsPM,rows,shown,payback,profitMonth,need,profitN,putIn,
     roi:putIn>0?profitN/putIn:0,T,launchT,fixedM,ordersPM,adNeedPM,sellOut:pairsPM>0?stock/pairsPM:Infinity,stockLeft:Math.max(0,stock-T.units),
     beROAS:avg.before>0?aov/avg.before:Infinity,roas:cpa>0?aov/cpa:Infinity,beCPA:avg.before/(1-org),keepPair:ppo>0?avg.keep/ppo:0};
 }
@@ -447,26 +467,39 @@ function fieldHTML(k){
   const tip=`<button class="tip" type="button" data-tip="${esc(f.tip)}" aria-label="${esc(f.tip)}">?</button>`;
   const box=`<div class="box">${pre}<input id="in-${k}" type="number" inputmode="decimal" data-k="${k}" value="${v}" step="${f.slider?f.slider[2]:f.step||1}" ${f.min!=null?`min="${f.min}"`:''} ${f.max!=null?`max="${f.max}"`:''}>${post}</div>`;
   let ctl=f.slider?`<div class="row sl"><input type="range" id="sl-${k}" aria-label="${esc(f.l)}" data-k="${k}" min="${f.slider[0]}" max="${f.slider[1]}" step="${f.slider[2]}" value="${v}">${box}</div>`
-    :`<div class="row">${box}${f.conv?`<div class="conv">= <b class="num" id="conv-${k}"></b></div>`:''}</div>`;
-  if(f.toggle)ctl+=`<div class="toggle" role="group" aria-label="Who pays delivery"><button type="button" data-ship="absorbed" aria-pressed="${S.inputs.shipMode==='absorbed'}">I pay it (free delivery)</button><button type="button" data-ship="charged" aria-pressed="${S.inputs.shipMode==='charged'}">Customer pays</button></div>`;
+    :`<div class="row">${box}</div>`;
   return `<div class="field" id="f-${k}"><label for="in-${k}">${esc(f.l)} ${tip}</label>${ctl}</div>`;
 }
 function listHTML(key,lt){
   return `<div class="list" id="list-${key}">${S[key].map((r,i)=>`<div class="list-row"><div class="box"><input id="${key}-n-${i}" aria-label="Cost name" data-list="${key}" data-i="${i}" data-f="n" value="${esc(r.n)}"></div><div class="box"><span>RM</span><input id="${key}-v-${i}" type="number" inputmode="decimal" aria-label="${esc(r.n)} amount" data-list="${key}" data-i="${i}" data-f="v" value="${r.v}"></div><button type="button" class="x" data-del="${key}" data-i="${i}" aria-label="Remove ${esc(r.n)}">×</button></div>`).join('')}
   <div class="row" style="justify-content:space-between;flex-wrap:wrap"><button type="button" class="add" data-add="${key}">＋ Add more</button><span class="total">${lt}: <b class="num" id="tot-${key}"></b></span></div></div>`;
 }
+function costHTML(){
+  const opt=(v,cur,l)=>`<option value="${v}" ${v===cur?'selected':''}>${l}</option>`;
+  return `<div class="list" id="list-costs">${S.costs.map((c,i)=>`<div class="crow">
+    <div class="r1"><div class="box"><input id="cost-n-${i}" aria-label="Cost name" data-cost="${i}" data-f="n" value="${esc(c.n)}" placeholder="Name of cost, e.g. Thank-you card"></div><button type="button" class="x" data-delcost="${i}" aria-label="Remove ${esc(c.n)}">×</button></div>
+    <div class="r2">
+      <div class="box amt">${c.per==='pct'?'':`<select id="cost-c-${i}" aria-label="Currency" data-cost="${i}" data-f="cur">${opt('RM',c.cur,'RM')}${opt('RMB',c.cur,'RMB')}</select>`}<input id="cost-v-${i}" type="number" inputmode="decimal" step="0.1" min="0" aria-label="${esc(c.n)} amount" data-cost="${i}" data-f="v" value="${c.v}">${c.per==='pct'?'<span>%</span>':''}</div>
+      <select id="cost-p-${i}" aria-label="How this cost is charged" data-cost="${i}" data-f="per">${opt('pair',c.per,'per pair')}${opt('order',c.per,'per order')}${opt('pct',c.per,'% of the price')}</select>
+      <span class="cv" id="cost-cv-${i}"></span>
+    </div>
+    ${c.per==='pair'?`<label class="upf"><input type="checkbox" id="cost-u-${i}" data-cost="${i}" data-f="up" ${c.up?'checked':''}> I pay this when I order stock</label>`:''}
+  </div>`).join('')}
+  <div class="row" style="justify-content:space-between;flex-wrap:wrap"><button type="button" class="add" data-addcost="1">＋ Add a cost</button><span class="total">A 1-pair order costs me: <b class="num" id="tot-costs"></b></span></div></div>`;
+}
+function rebuildCosts(){$('list-costs').outerHTML=costHTML()}
 function buildInputs(){
   $('strip').innerHTML=fieldHTML('months')+fieldHTML('savings');
   $('groups').innerHTML=GROUPS.map(g=>{
-    let body=g.list?listHTML(g.list,g.lt):g.main.map(fieldHTML).join('');
+    let body=g.list?listHTML(g.list,g.lt):(g.costs?`<p class="note">Add every cost that comes with selling. Pick RM or RMB, and whether it's per pair, per order, or a % of the price. Use ＋ Add a cost for things like stickers, thank-you cards or insurance.</p>${costHTML()}`:'')+g.main.map(fieldHTML).join('');
     if(g.note)body+=`<div class="note" id="${g.note}"></div>`;
-    if(g.more)body+=`<details class="inner"><summary>More options</summary><div class="in">${g.more.map(fieldHTML).join('')}${g.moreNote?`<div class="note" id="${g.moreNote}"></div>`:''}</div></details>`;
+    if(g.more)body+=`<details class="inner"><summary>${g.moreTitle||'More options'}</summary><div class="in">${g.more.map(fieldHTML).join('')}${g.moreNote?`<div class="note" id="${g.moreNote}"></div>`:''}</div></details>`;
     return `<div class="grp g-${g.c}"><div class="grp-h"><span class="tag">${g.tag}</span><h3>${g.t}</h3></div>${body}</div>`;
   }).join('');
   $('wiSettings').innerHTML=fieldHTML('swing');
   markChanged();
 }
-function markChanged(){for(const k in F){const el=$('f-'+k);if(el)el.classList.toggle('changed',S.inputs[k]!==D[k]||(k==='shipping'&&S.inputs.shipMode!==D.shipMode))}}
+function markChanged(){for(const k in F){const el=$('f-'+k);if(el)el.classList.toggle('changed',S.inputs[k]!==D[k])}}
 function setInput(k,v,src){
   if(!isFinite(v))return;
   if(k==='shopeePct'&&v+S.inputs.tiktokPct>100)v=100-S.inputs.tiktokPct;
@@ -482,13 +515,24 @@ document.addEventListener('input',e=>{
   if(t.dataset.k){if(t.value==='')return;setInput(t.dataset.k,parseFloat(t.value),t)}
   else if(t.dataset.list){const r=S[t.dataset.list][+t.dataset.i];if(t.dataset.f==='n')r.n=t.value;else r.v=parseFloat(t.value)||0;update();save()}
   else if(t.dataset.ck){const [m,f]=t.dataset.ck.split('.');S.track[m]=S.track[m]||{};if(t.value==='')delete S.track[m][f];else S.track[m][f]=parseFloat(t.value);S.examples=false;renderCheckin(true);renderExBadge();save()}
+  else if(t.dataset.cost!=null&&(t.dataset.f==='n'||t.dataset.f==='v')){const c=S.costs[+t.dataset.cost];if(t.dataset.f==='n')c.n=t.value;else c.v=parseFloat(t.value)||0;update();save()}
   else if(t.id==='dropName'){S.drop=t.value;save()}
+});
+document.addEventListener('change',e=>{
+  const t=e.target; if(t.dataset.cost==null)return;
+  const c=S.costs[+t.dataset.cost], f=t.dataset.f;
+  if(f==='cur')c.cur=t.value;
+  else if(f==='up')c.up=t.checked;
+  else if(f==='per'){c.per=t.value; if(c.per==='pct')c.cur='RM'; if(c.per!=='pair')c.up=false; rebuildCosts(); $('cost-p-'+t.dataset.cost)?.focus()}
+  else return;
+  update(); save();
 });
 document.addEventListener('click',e=>{
   const t=e.target.closest('button'); if(!t)return;
-  if(t.dataset.ship){S.inputs.shipMode=t.dataset.ship;t.parentNode.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b===t));markChanged();update();save()}
-  else if(t.dataset.add){const k=t.dataset.add;S[k].push({n:'New cost',v:0});rebuildList(k);update();save();$(`${k}-n-${S[k].length-1}`)?.select()}
+  if(t.dataset.add){const k=t.dataset.add;S[k].push({n:'New cost',v:0});rebuildList(k);update();save();$(`${k}-n-${S[k].length-1}`)?.select()}
   else if(t.dataset.del){S[t.dataset.del].splice(+t.dataset.i,1);rebuildList(t.dataset.del);update();save()}
+  else if(t.dataset.addcost){S.costs.push({n:'',v:0,cur:'RM',per:'pair',up:false});rebuildCosts();update();save();$(`cost-n-${S.costs.length-1}`)?.focus()}
+  else if(t.dataset.delcost!=null){S.costs.splice(+t.dataset.delcost,1);rebuildCosts();update();save()}
   else if(t.dataset.dn){S.donut=+t.dataset.dn;renderDonut(runAll().mid);save()}
   else if(t.id==='clearEx'){S.track={};S.examples=false;renderCheckin();renderExBadge();save()}
 });
@@ -497,7 +541,7 @@ const resetBtn=$('resetBtn'); let resetArm=null;
 resetBtn.addEventListener('click',()=>{
   if(!resetArm){resetBtn.textContent='Tap again to reset everything';resetBtn.classList.add('warnbtn');resetArm=setTimeout(()=>{resetArm=null;resetBtn.textContent='↺ Reset to example numbers';resetBtn.classList.remove('warnbtn')},3500);return}
   clearTimeout(resetArm);resetArm=null;resetBtn.textContent='↺ Reset to example numbers';resetBtn.classList.remove('warnbtn');
-  S.inputs=clone(D);S.launch=clone(DEF_LAUNCH);S.fixed=clone(DEF_FIXED);buildInputs();update();save();
+  S.inputs=clone(D);S.costs=clone(DEF_COSTS);S.launch=clone(DEF_LAUNCH);S.fixed=clone(DEF_FIXED);buildInputs();update();save();
 });
 
 /* ---------- Animated numbers ---------- */
@@ -514,8 +558,9 @@ function anim(el,to,fmt){
 /* ---------- Render ---------- */
 function update(){
   const R=runAll(),M=R.mid,I=S.inputs;
-  $('conv-unitCostRMB').textContent=rm(M.unitCost,2)+' per pair';
-  $('dv-cost').innerHTML=`With shipping from China, one pair costs you <b>${rm(M.landed,2)}</b> by the time it reaches you.`;
+  S.costs.forEach((c,i)=>{const el=$('cost-cv-'+i);if(el)el.innerHTML=c.cur==='RMB'&&c.per!=='pct'?`= <b>${rm(costRM(c,I.fx),2)}</b>`:''});
+  $('tot-costs').textContent=rm(M.types[0].costSum,2);
+  $('dv-cost').innerHTML=`Your stock costs <b>${rm(M.landed,2)}</b> a pair (the costs ticked "I pay this when I order stock"). Everything else is paid as you sell.`;
   $('dv-mix').innerHTML=`Your own website gets the other <b>${nf(M.web)}%</b> of orders. Across all three, fees take <b>${pc(M.feeRate,1)}</b> of each sale.`;
   $('dv-stock').innerHTML=`${nf(M.stock)} pairs cost you <b>${rm(M.invCost)}</b>. At ${nf(M.pairsPM)} pairs a month they last about <b>${isFinite(M.sellOut)?monthWord(Math.round(M.sellOut*10)/10):'forever'}</b>.`;
   $('dv-ads').innerHTML=M.adNeedPM>I.adBudget*1.05?`To sell ${nf(M.pairsPM)} pairs a month you'd spend about <b>${rm(M.adNeedPM)}</b> on ads, which is more than your budget.`:`To sell ${nf(M.pairsPM)} pairs a month you'd spend about <b>${rm(M.adNeedPM)}</b> on ads. That fits your budget.`;
@@ -523,7 +568,7 @@ function update(){
 
   // 1. Big answer
   const adOK=M.adNeedPM<=I.adBudget*1.05; let cls,face,title,sub;
-  if(M.avg.keep<=0){cls='bad';face='😟';title="You're losing money on each sale. Check your costs below.";sub=`After socks, delivery, fees and ads, each order loses ${rm(-M.avg.keep,2)}. Try a higher price, cheaper delivery or a lower ad cost.`}
+  if(M.avg.keep<=0){cls='bad';face='😟';title="You're losing money on each sale. Check your costs below.";sub=`After your costs, fees and ads, each order loses ${rm(-M.avg.keep,2)}. Try a higher price, lower costs or a lower ad cost.`}
   else if(M.payback===null){cls='bad';face='😟';title="You make a little on each sale, but not enough to get your money back.";sub=`You keep ${rm(M.keepPair,2)} a pair, but stock, start-up costs and bills are too much for ${nf(M.pairsPM)} pairs a month. Sell more each month or cut costs.`}
   else if(M.payback<=M.N&&adOK){cls='good';face='🥳';title=`Your plan looks healthy! You'll get your money back in about ${monthWord(M.payback)}.`;sub=`You keep ${rm(M.keepPair,2)} on every pair and make ${rm(M.profitN)} profit in ${monthWord(M.N)}.`}
   else if(!adOK){cls='warn';face='🤔';title='Almost there. Your ad budget is too small for the sales you planned.';sub=`Selling ${nf(M.pairsPM)} pairs a month needs about ${rm(M.adNeedPM)} of ads, but your budget is ${rm(I.adBudget)}. Raise the budget, plan fewer sales, or bring down the ad cost per order.`}
@@ -535,7 +580,7 @@ function update(){
   anim($('k-need'),M.need,v=>rm(v));
   $('w-need').textContent=`Stock ${rm(M.invCost)} + start-up costs ${rm(M.launchT)}${M.need>M.invCost+M.launchT+1?', plus early bills and ads before sales catch up':''}.`;
   anim($('k-keep'),M.keepPair,v=>rm(v,2));
-  $('w-keep').textContent='After the socks, packaging, delivery, fees and ads. Monthly bills come out of the total.';
+  $('w-keep').textContent='After all your costs, platform fees and ads. Monthly bills come out of the total.';
   const kb=$('k-back');
   if(M.payback===null){kb._v=NaN;kb.textContent='Not yet'}else anim(kb,M.payback,v=>'Month '+Math.round(v));
   $('w-back').textContent=M.payback===null?'At this pace, sales never pay back what you spent.':'By then, sales have paid back your stock and start-up costs.';
@@ -560,17 +605,17 @@ function update(){
 }
 
 /* 4. Donut */
-const DN=[['Supplier cost','#FF9EBB','supplier'],['Packaging','#FFC48A','pack'],['Delivery','#9CCBF5','ship'],['Fees','#E9EE6E','fees'],['Ads','#B79AD0','ads'],['I keep','#7FE38E','keep']];
+const COST_COLORS=['#FF9EBB','#FFC48A','#9CCBF5','#F6A6A6','#A8E0DA','#FFD98A','#F7C6E0','#C7D3F0'];
 function renderDonut(M){
   document.querySelectorAll('[data-dn]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.dn===S.donut));
   const o=M.types[S.donut-1],n=o.n,price=o.price/n;
-  const parts=DN.map(([l,c,k])=>({l,c,v:Math.max(0,o[k]/n)})),total=parts.reduce((s,p)=>s+p.v,0)||1;
+  const parts=[...o.items.map((x,i)=>({l:x.n,c:COST_COLORS[i%COST_COLORS.length],v:Math.max(0,x.v/n)})),{l:'Platform & payment fees',c:'#E9EE6E',v:o.fees/n},{l:'Ads',c:'#B79AD0',v:o.ads/n},{l:'I keep',c:'#7FE38E',v:Math.max(0,o.keep/n)}],total=parts.reduce((s,p)=>s+p.v,0)||1;
   const r=40,C=2*Math.PI*r; let off=0;
   let svg=`<svg viewBox="0 0 100 100" role="img" aria-label="Out of ${rm(price,2)}, you keep ${rm(o.keep/n,2)}"><circle cx="50" cy="50" r="${r}" fill="none" stroke="#F3EEE6" stroke-width="16"/>`;
   parts.forEach(p=>{const len=p.v/total*C;if(len>0.01)svg+=`<circle cx="50" cy="50" r="${r}" fill="none" stroke="${p.c}" stroke-width="16" stroke-dasharray="${Math.max(0.01,len-0.7)} ${C}" stroke-dashoffset="${-off}"/>`;off+=len});
   $('donutSvg').innerHTML=svg+'</svg>';
   $('dnKeep').textContent=rm(o.keep/n,2);
-  $('legend').innerHTML=parts.map(p=>`<div class="leg ${p.l==='I keep'?'keep':''}"><i style="background:${p.c}"></i><span>${p.l}</span><b class="num">${rm(p.v,2)}</b></div>`).join('');
+  $('legend').innerHTML=parts.map(p=>`<div class="leg ${p.l==='I keep'?'keep':''}"><i style="background:${p.c}"></i><span>${esc(p.l)}</span><b class="num">${p.l==='I keep'?rm(o.keep/n,2):rm(p.v,2)}</b></div>`).join('');
   $('dnCaption').textContent=o.keep>0?`Out of ${rm(price,2)}, you keep ${rm(o.keep/n,2)}.`:`Out of ${rm(price,2)}, you lose ${rm(-o.keep/n,2)}.`;
 }
 
@@ -658,10 +703,10 @@ function renderTips(M){
   else t.push(['📢',`Start with a small ad test (about RM 300 to 500) to see your real ad cost per order before spending the full ${rm(I.adBudget)}.`]);
   if(isFinite(M.sellOut)&&M.sellOut>M.N+0.5)t.push(['📦',`At ${nf(M.pairsPM)} pairs a month, your ${nf(M.stock)} pairs take about ${monthWord(Math.round(M.sellOut))} to sell. Ask your supplier if you can start with a smaller first order.`]);
   else if(isFinite(M.sellOut))t.push(['📦',`You could sell out in about ${monthWord(Math.max(1,Math.round(M.sellOut)))}. Reorder about a month before so you don't run out.`]);
-  const big=[['the socks',M.avg.supplier],['delivery',M.avg.ship],['platform fees',M.avg.fees],['ads',M.avg.ads],['packaging',M.avg.pack]].sort((a,b)=>b[1]-a[1])[0];
-  if(big[0]==='delivery')t.push(['🚚',`Delivery is your biggest cost per order (${rm(big[1],2)}). Try free delivery only above a minimum spend, like 2 pairs.`]);
+  const big=[...M.avg.items.map(x=>[x.n,x.v]),['platform fees',M.avg.fees],['ads',M.avg.ads]].sort((a,b)=>b[1]-a[1])[0]||['',0];
+  if(/deliver|ship|courier|postage/i.test(big[0]))t.push(['🚚',`${big[0]} is your biggest cost per order (${rm(big[1],2)}). Try free delivery only above a minimum spend, like 2 pairs.`]);
   else if(big[0]==='ads')t.push(['📱',`Ads are your biggest cost per order (${rm(big[1],2)}). Free posts on TikTok and Instagram, and Pilates studio partners, bring orders with no ad cost.`]);
-  else t.push(['💡',`Your biggest cost per order is ${big[0]} (${rm(big[1],2)}). Small savings there add up fastest.`]);
+  else t.push(['💡',`Your biggest cost per order is ${esc(big[0])} (${rm(big[1],2)}). Small savings there add up fastest.`]);
   if(I.savings>0&&M.need>I.savings)t.unshift(['💵',`You need ${rm(M.need)} to start but have ${rm(I.savings)}. Order fewer pairs or cut start-up costs.`]);
   $('tips').innerHTML=t.slice(0,4).map(([e,x])=>`<li><span class="e" aria-hidden="true">${e}</span><span>${x}</span></li>`).join('');
 }
@@ -711,13 +756,13 @@ function advFacts(){
     `Brand / drop: ${S.drop}. Product: Pilates grip socks, sold in Malaysia.`,
     `Prices: 1 pair RM ${nf(I.price1,2)}, 2 pairs RM ${nf(I.price2,2)}, 3 pairs RM ${nf(I.price3,2)}. ${I.bundlePct}% of orders are bundles.`,
     `Planned sales: ${nf(I.pairsPerMonth)} pairs a month (about ${nf(m.ordersPM)} orders).`,
-    `Supplier price RMB ${nf(I.unitCostRMB,2)} a pair (= RM ${nf(m.unitCost,2)} at RM ${I.fx} per RMB). Shipping from China + import RM ${nf(I.freight,2)} a pair (an estimate, no quote yet). Packaging RM ${nf(I.packaging,2)} a pair. Delivery to customer RM ${nf(I.shipping,2)} an order, ${I.shipMode==='absorbed'?'paid by the founder (free delivery for the customer)':'paid by the customer'}.`,
+    `Costs for each sale (exchange rate RM ${I.fx} per RMB): ${S.costs.map(c=>`${c.n||'Unnamed cost'} ${c.per==='pct'?nf(+c.v||0,1)+'% of the price':(c.cur==='RMB'?`RMB ${nf(+c.v||0,2)} (= RM ${nf(costRM(c,I.fx),2)})`:`RM ${nf(+c.v||0,2)}`)+(c.per==='pair'?' per pair':' per order')}${c.per==='pair'&&c.up?', paid upfront with the stock':''}`).join('; ')}. Stock costs RM ${nf(m.landed,2)} a pair.`,
     `Where the founder sells: own website ${nf(m.web)}% of orders (card fee ${I.gateway}%), Shopee ${I.shopeePct}% (fees ${I.shopeeFee}%), TikTok Shop ${I.tiktokPct}% (fees ${I.tiktokFee}%).`,
     `First stock order (MOQ): ${nf(m.stock)} pairs costing RM ${nf(m.invCost)}.`,
     `Start-up costs: ${list(S.launch)} (total RM ${nf(m.launchT)}). Monthly bills: ${list(S.fixed)} (total RM ${nf(m.fixedM)} a month).`,
     `Ads: budget RM ${nf(I.adBudget)} a month, expected ad cost to get 1 order RM ${nf(I.cpa,2)}, ${I.organic}% of orders expected without ads. The planned sales need about RM ${nf(m.adNeedPM)} of ads a month.`,
     `Money saved for this: RM ${nf(I.savings)}.`,
-    `Dashboard results (normal case): money needed to start RM ${nf(m.need)}. Keeps RM ${nf(m.keepPair,2)} per pair after socks, packaging, delivery, fees and ads. Money back in ${m.payback?'month '+m.payback:'never at this pace'}. Profit after ${m.N} months RM ${nf(m.profitN)}.`,
+    `Dashboard results (normal case): money needed to start RM ${nf(m.need)}. Keeps RM ${nf(m.keepPair,2)} per pair after all costs, fees and ads. Money back in ${m.payback?'month '+m.payback:'never at this pace'}. Profit after ${m.N} months RM ${nf(m.profitN)}.`,
     `Bad month (sales -${I.swing}%, ads +${I.swing}%): profit RM ${nf(R.bad.profitN)}. Great month (sales +${I.swing}%, ads -${I.swing}%): profit RM ${nf(R.great.profitN)}.`
   ].join('\n');
 }
