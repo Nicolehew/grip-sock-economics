@@ -99,6 +99,8 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:24px}
 .toggle{display:inline-flex;background:var(--field);border-radius:999px;padding:3px}
 .toggle button{border:0;background:transparent;padding:6px 12px;border-radius:999px;font-size:13px;color:var(--muted)}
 .toggle button[aria-pressed="true"]{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.conv{flex:1;min-width:0;display:flex;align-items:center;gap:8px;height:38px;padding:0 12px;border-radius:10px;background:var(--sky-soft);font-size:13px;color:var(--muted);white-space:nowrap}
+.conv b{color:var(--ink);font-weight:600;font-size:15px}
 .derived{font-size:13px;color:var(--muted);background:var(--field);border-radius:10px;padding:8px 10px}
 .derived b{color:var(--ink);font-weight:600}
 .list{display:flex;flex-direction:column;gap:8px}
@@ -275,7 +277,7 @@ td.hl,th.hl{background:var(--sky-soft)}
 /* ---------- Defaults (example numbers: replace with your supplier quote) ---------- */
 const DEFAULTS = {
   price1:70, price2:129, price3:179, bundlePct:35, threeShare:40,
-  unitCost:3.1, freight:1.5, packaging:1.2, shipping:7, shipMode:'absorbed', gateway:2.5,
+  unitCostRMB:5, fx:0.62, unitCost:3.1, freight:1.5, packaging:1.2, shipping:7, shipMode:'absorbed', gateway:2.5,
   moqPerSize:250, sizes:4, sellThrough:70,
   adBudget:2000, cpa:22, organic:30, cpaSwing:30, worstST:50, bestST:90,
   shopeePct:35, tiktokPct:25, shopeeFee:18, tiktokFee:14,
@@ -303,7 +305,8 @@ const FIELDS = {
     {k:'threeShare',l:'Of bundles, share that are 3-pair',u:'%',slider:[0,100,1],tip:'Of bundle orders, how many pick the 3-pair. The rest are 2-pair.'}
   ],
   'Cost per Pair':[
-    {k:'unitCost',l:'Supplier unit cost',pre:'RM',min:0,step:0.1,tip:'What your factory charges per pair. Default is your RMB 5 quote at about RM 0.62 per RMB.'},
+    {k:'unitCostRMB',l:'Supplier unit cost',pre:'RMB',min:0,step:0.1,conv:true,tip:'What your factory charges per pair, in Chinese yuan as quoted. The ringgit amount beside it is what the dashboard uses.'},
+    {k:'fx',l:'Exchange rate',pre:'RM',u:'per RMB 1',min:0,step:0.01,tip:'How many ringgit one yuan costs. Check the rate your bank or payment service gives you, not the mid-market rate.'},
     {k:'freight',l:'Freight & import per pair',pre:'RM',min:0,step:0.1,tip:'Shipping from the factory, duties and clearing, divided by number of pairs. RM 1.50 is an estimate until you have a forwarder quote.'},
     {k:'packaging',l:'Packaging per pair',pre:'RM',min:0,step:0.1,tip:'Pouch, tag, insert card and mailer, per pair.'},
     {k:'shipping',l:'Customer shipping per order',pre:'RM',min:0,step:0.5,tip:'Courier cost to deliver one order to the customer.',toggle:true},
@@ -400,6 +403,7 @@ function scen(name,I){
   return{name:'Base',cpaMult:1,st:I.sellThrough};
 }
 function runAll(){
+  S.inputs.unitCost=(+S.inputs.unitCostRMB||0)*(+S.inputs.fx||0);
   const lt=sum(S.launch), fm=sum(S.fixed);
   const R={}; for(const k of['worst','base','best'])R[k]=model(S.inputs,lt,fm,scen(k,S.inputs));
   return R;
@@ -414,7 +418,7 @@ function fieldHTML(f){
   const box=`<div class="box">${pre}<input id="in-${f.k}" type="number" inputmode="decimal" data-k="${f.k}" value="${v}" step="${f.slider?f.slider[2]:f.step||1}" ${f.min!=null?`min="${f.min}"`:''} ${f.max!=null?`max="${f.max}"`:''}>${post}</div>`;
   let ctl;
   if(f.slider){ctl=`<div class="row sl"><input type="range" id="sl-${f.k}" aria-label="${esc(f.l)}" data-k="${f.k}" min="${f.slider[0]}" max="${f.slider[1]}" step="${f.slider[2]}" value="${v}">${box}</div>`}
-  else ctl=`<div class="row">${box}</div>`;
+  else ctl=`<div class="row">${box}${f.conv?`<div class="conv" aria-live="polite"><span>=</span><b class="num" id="conv-${f.k}"></b></div>`:''}</div>`;
   if(f.toggle)ctl+=`<div class="toggle" role="group" aria-label="Shipping"><button type="button" data-ship="absorbed" aria-pressed="${S.inputs.shipMode==='absorbed'}">I absorb it</button><button type="button" data-ship="charged" aria-pressed="${S.inputs.shipMode==='charged'}">Customer pays</button></div>`;
   return `<div class="field" id="f-${f.k}"><label for="in-${f.k}">${esc(f.l)} ${tip}</label>${ctl}</div>`;
 }
@@ -512,7 +516,8 @@ function update(){
   // derived input notes
   $('dv-stock').innerHTML=`Total stock <b>${nf(M.stock)} pairs</b> · stock cost <b>${rm(M.invCost)}</b> · target to sell <b>${nf(M.stock*I.sellThrough/100)} pairs</b>`;
   $('dv-mix').innerHTML=`Own website <b>${nf(M.web)}%</b> · blended fees <b>${pc(M.feeRate,1)}</b> of each sale`;
-  $('dv-landed').innerHTML=`Landed cost <b>${rm(M.landed,2)}</b> per pair${I.shipMode==='charged'?' · shipping is passed to the customer':''}`;
+  $('conv-unitCostRMB').textContent=`${rm(I.unitCost,2)} per pair`;
+  $('dv-landed').innerHTML=`Supplier <b>RMB ${nf(I.unitCostRMB,2)}</b> = <b>${rm(I.unitCost,2)}</b> · landed cost with freight <b>${rm(M.landed,2)}</b> per pair${I.shipMode==='charged'?' · shipping is passed to the customer':''}`;
   $('tot-launch').textContent=rm(M.launchTotal); $('tot-fixed').textContent=rm(M.fixedMonthly);
 
   // KPIs
@@ -569,7 +574,8 @@ function renderUnit(M){
   $('unitTbl').innerHTML=`<thead><tr><th>Per order</th>${cols.map(([n],i)=>`<th class="${i===3?'hl':''}">${n}</th>`).join('')}</tr></thead><tbody>
   ${r('Pairs',o=>nf(o.n,2))}
   ${r('Selling price',o=>rm(o.price,2))}
-  ${r('Product cost (landed)',o=>rm(-o.product,2))}
+  ${r('Supplier cost (as quoted)',o=>`<span class="muted">RMB ${nf(o.n*S.inputs.unitCostRMB,2)}</span>`)}
+  ${r('Product cost in RM (landed)',o=>rm(-o.product,2))}
   ${r('Packaging',o=>rm(-o.pack,2))}
   ${r('Customer shipping',o=>rm(-o.ship,2))}
   ${r('Fees (gateway + marketplace)',o=>rm(-o.fees,2))}
