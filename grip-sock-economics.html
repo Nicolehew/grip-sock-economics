@@ -388,7 +388,7 @@ const EX_TRACK={1:{orders:92,revenue:8890,ad:1720},2:{orders:108,revenue:10650,a
 /* Costs for each sale. cur: RM or RMB. per: 'pair', 'order' or 'pct' (% of the price). up: paid when ordering stock. */
 const costsFrom=o=>[
   {n:'Socks from supplier',v:o.unitCostRMB??5,cur:'RMB',per:'pair',up:true},
-  {n:'Shipping from China + import',v:o.freight??1.5,cur:'RM',per:'pair',up:true},
+  o.freight!=null?{n:'Shipping from China + import',v:o.freight,cur:'RM',per:'pair',up:true}:{n:'Shipping from China + import',v:1500,cur:'RM',per:'batch',up:true},
   {n:'Packaging',v:o.packaging??1.2,cur:'RM',per:'pair',up:false},
   {n:o.shipMode==='charged'?'Delivery to customer (customer pays)':'Delivery to customer',v:o.shipMode==='charged'?0:(o.shipping??7),cur:'RM',per:'order',up:false}
 ];
@@ -529,7 +529,7 @@ function costHTML(){
     <div class="r1"><div class="box"><input id="cost-n-${i}" aria-label="Cost name" data-cost="${i}" data-f="n" value="${esc(c.n)}" placeholder="Name of cost, e.g. Thank-you card"></div><button type="button" class="x" data-delcost="${i}" aria-label="Remove ${esc(c.n)}">×</button></div>
     <div class="r2">
       <div class="box amt">${c.per==='pct'?'':`<select id="cost-c-${i}" aria-label="Currency" data-cost="${i}" data-f="cur">${opt('RM',c.cur,'RM')}${opt('RMB',c.cur,'RMB')}</select>`}<input id="cost-v-${i}" type="number" inputmode="decimal" step="0.1" min="0" aria-label="${esc(c.n)} amount" data-cost="${i}" data-f="v" value="${c.v}">${c.per==='pct'?'<span>%</span>':''}</div>
-      <select id="cost-p-${i}" aria-label="How this cost is charged" data-cost="${i}" data-f="per">${opt('pair',c.per,'per pair')}${opt('batch',c.per,'total for my whole stock order')}${opt('order',c.per,'per order')}${opt('pct',c.per,'% of the price')}</select>
+      <select id="cost-p-${i}" aria-label="How this cost is charged" data-cost="${i}" data-f="per">${opt('pair',c.per,'per pair')}${opt('batch',c.per,'one-off (total for my whole stock order)')}${opt('order',c.per,'per order')}${opt('pct',c.per,'% of the price')}</select>
       <span class="cv" id="cost-cv-${i}"></span>
     </div>
     ${c.per==='pair'?`<label class="upf"><input type="checkbox" id="cost-u-${i}" data-cost="${i}" data-f="up" ${c.up?'checked':''}> I pay this when I order stock</label>`:''}
@@ -541,7 +541,7 @@ function rebuildCosts(){$('list-costs').outerHTML=costHTML()}
 function buildInputs(){
   $('strip').innerHTML=fieldHTML('months')+fieldHTML('savings');
   $('groups').innerHTML=GROUPS.map(g=>{
-    let body=g.list?listHTML(g.list,g.lt):(g.costs?`<p class="note">Add every cost that comes with selling. Pick RM or RMB, and whether it's per pair, per order, or a % of the price. Use ＋ Add a cost for things like stickers, thank-you cards or insurance.</p>${costHTML()}`:'')+g.main.map(fieldHTML).join('');
+    let body=g.list?listHTML(g.list,g.lt):(g.costs?`<p class="note">Add every cost that comes with selling. Pick RM or RMB, and whether it's per pair, one-off (a total for your whole stock order, like shipping from China), per order, or a % of the price. Use ＋ Add a cost for things like stickers, thank-you cards or insurance.</p>${costHTML()}`:'')+g.main.map(fieldHTML).join('');
     if(g.note)body+=`<div class="note" id="${g.note}"></div>`;
     if(g.more)body+=`<details class="inner"><summary>${g.moreTitle||'More options'}</summary><div class="in">${g.more.map(fieldHTML).join('')}${g.moreNote?`<div class="note" id="${g.moreNote}"></div>`:''}</div></details>`;
     return `<div class="grp g-${g.c}"><div class="grp-h"><span class="tag">${g.tag}</span><h3>${g.t}</h3></div>${body}</div>`;
@@ -615,13 +615,13 @@ function update(){
     tt.className='moqtot';
     if(c.per==='pair'&&costRM(c,I.fx)>I.price1){
       tt.className='moqtot warn';
-      tt.innerHTML=`⚠️ This says <b>${money(amt)} for every pair</b>, which is more than your price of ${rm(I.price1)}. If ${money(amt)} is what you pay for your whole order, change "per pair" to <b>"total for my whole stock order"</b>.`;
+      tt.innerHTML=`⚠️ This says <b>${money(amt)} for every pair</b>, which is more than your price of ${rm(I.price1)}. If ${money(amt)} is what you pay for your whole order, change "per pair" to <b>"one-off (total for my whole stock order)"</b>.`;
     }else if(c.per==='pair'&&!/sock|supplier|factory/i.test(c.n||'')&&costRM(c,I.fx)>I.price1*0.3){
       tt.className='moqtot warn';
-      tt.innerHTML=`⚠️ <b>${money(amt)} for every pair</b> is ${pc(costRM(c,I.fx)/I.price1)} of your ${rm(I.price1)} price, which is very high for this kind of cost. If ${money(amt)} is the total for your whole order, change "per pair" to <b>"total for my whole stock order"</b>.${c.up?` Right now it adds ${rm(costRM(c,I.fx)*M.stock)} to your stock cost.`:''}`;
+      tt.innerHTML=`⚠️ <b>${money(amt)} for every pair</b> is ${pc(costRM(c,I.fx)/I.price1)} of your ${rm(I.price1)} price, which is very high for this kind of cost. If ${money(amt)} is the total for your whole order, change "per pair" to <b>"one-off (total for my whole stock order)"</b>.${c.up?` Right now it adds ${rm(costRM(c,I.fx)*M.stock)} to your stock cost.`:''}`;
     }else if(c.per==='order'&&costRM(c,I.fx)>I.price1){
       tt.className='moqtot warn';
-      tt.innerHTML=`⚠️ This says <b>${money(amt)} for every order</b>, which is more than your price of ${rm(I.price1)}. If it's a one-time cost, delete it here and add it under 🌸 Start-up costs. If it's a total for your stock, choose <b>"total for my whole stock order"</b>.`;
+      tt.innerHTML=`⚠️ This says <b>${money(amt)} for every order</b>, which is more than your price of ${rm(I.price1)}. If it's a one-time cost, delete it here and add it under 🌸 Start-up costs. If it's a total for your stock, choose <b>"one-off (total for my whole stock order)"</b>.`;
     }else if(c.per==='pair'&&c.up){
       tt.innerHTML=`📦 ${money(amt)} × ${nf(M.stock)} pairs (your MOQ) = <b>${c.cur==='RMB'?`RMB ${nf(amt*M.stock)}</b> = <b>${rm(costRM(c,I.fx)*M.stock)}`:rm(costRM(c,I.fx)*M.stock)}</b> for your first order`;
     }else if(c.per==='batch'){
