@@ -129,6 +129,9 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:28px}
 .crow .cv b{color:var(--ink)}
 .crow .upf{display:flex;align-items:center;gap:8px;font-size:13px;color:#46505E;font-weight:600;cursor:pointer}
 .crow .upf input{width:18px;height:18px;accent-color:var(--accent)}
+.moqtot{font-size:14px;background:var(--peach-t);border-radius:10px;padding:8px 12px;color:#46505E}
+.moqtot:empty{display:none}
+.moqtot b{color:var(--peach-i);font-size:16px}
 .total{font-size:14px;color:var(--muted)}
 .total b{color:var(--ink);font-size:16px}
 .btn{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:800}
@@ -483,7 +486,7 @@ function costHTML(){
       <select id="cost-p-${i}" aria-label="How this cost is charged" data-cost="${i}" data-f="per">${opt('pair',c.per,'per pair')}${opt('order',c.per,'per order')}${opt('pct',c.per,'% of the price')}</select>
       <span class="cv" id="cost-cv-${i}"></span>
     </div>
-    ${c.per==='pair'?`<label class="upf"><input type="checkbox" id="cost-u-${i}" data-cost="${i}" data-f="up" ${c.up?'checked':''}> I pay this when I order stock</label>`:''}
+    ${c.per==='pair'?`<label class="upf"><input type="checkbox" id="cost-u-${i}" data-cost="${i}" data-f="up" ${c.up?'checked':''}> I pay this when I order stock</label><div class="moqtot" id="cost-t-${i}"></div>`:''}
   </div>`).join('')}
   <div class="row" style="justify-content:space-between;flex-wrap:wrap"><button type="button" class="add" data-addcost="1">＋ Add a cost</button><span class="total">A 1-pair order costs me: <b class="num" id="tot-costs"></b></span></div></div>`;
 }
@@ -558,11 +561,18 @@ function anim(el,to,fmt){
 /* ---------- Render ---------- */
 function update(){
   const R=runAll(),M=R.mid,I=S.inputs;
-  S.costs.forEach((c,i)=>{const el=$('cost-cv-'+i);if(el)el.innerHTML=c.cur==='RMB'&&c.per!=='pct'?`= <b>${rm(costRM(c,I.fx),2)}</b>`:''});
+  S.costs.forEach((c,i)=>{
+    const el=$('cost-cv-'+i);if(el)el.innerHTML=c.cur==='RMB'&&c.per!=='pct'?`= <b>${rm(costRM(c,I.fx),2)}</b>`:'';
+    const tt=$('cost-t-'+i);if(!tt)return;
+    if(c.per==='pair'&&c.up){const each=+c.v||0,tot=each*M.stock,totRM=costRM(c,I.fx)*M.stock;
+      tt.innerHTML=`📦 ${c.cur} ${nf(each,2)} × ${nf(M.stock)} pairs (your MOQ) = <b>${c.cur==='RMB'?`RMB ${nf(tot)}</b> = <b>${rm(totRM)}`:rm(totRM)}</b> for your first order`;
+    }else tt.innerHTML='';
+  });
   $('tot-costs').textContent=rm(M.types[0].costSum,2);
   $('dv-cost').innerHTML=`Your stock costs <b>${rm(M.landed,2)}</b> a pair (the costs ticked "I pay this when I order stock"). Everything else is paid as you sell.`;
   $('dv-mix').innerHTML=`Your own website gets the other <b>${nf(M.web)}%</b> of orders. Across all three, fees take <b>${pc(M.feeRate,1)}</b> of each sale.`;
-  $('dv-stock').innerHTML=`${nf(M.stock)} pairs cost you <b>${rm(M.invCost)}</b>. At ${nf(M.pairsPM)} pairs a month they last about <b>${isFinite(M.sellOut)?monthWord(Math.round(M.sellOut*10)/10):'forever'}</b>.`;
+  const upRows=S.costs.filter(c=>c.per==='pair'&&c.up);
+  $('dv-stock').innerHTML=`${nf(M.stock)} pairs cost you <b>${rm(M.invCost)}</b>${upRows.length>1?` (${upRows.map(c=>`${esc(c.n||'cost')} ${rm(costRM(c,I.fx)*M.stock)}`).join(' + ')})`:''}. At ${nf(M.pairsPM)} pairs a month they last about <b>${isFinite(M.sellOut)?monthWord(Math.round(M.sellOut*10)/10):'forever'}</b>.`;
   $('dv-ads').innerHTML=M.adNeedPM>I.adBudget*1.05?`To sell ${nf(M.pairsPM)} pairs a month you'd spend about <b>${rm(M.adNeedPM)}</b> on ads, which is more than your budget.`:`To sell ${nf(M.pairsPM)} pairs a month you'd spend about <b>${rm(M.adNeedPM)}</b> on ads. That fits your budget.`;
   $('tot-launch').textContent=rm(M.launchT); $('tot-fixed').textContent=rm(M.fixedM);
 
