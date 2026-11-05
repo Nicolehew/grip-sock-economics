@@ -103,7 +103,7 @@ details.inner .in{display:flex;flex-direction:column;gap:14px;padding:10px 0 2px
 .box input{font:inherit;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);background:transparent;border:0;width:100%;min-width:0;padding:0 6px;height:100%}
 .box input:focus{outline:none}
 .box:focus-within{box-shadow:0 0 0 2px var(--accent)}
-.row.sl .box{flex:0 0 120px}
+.row.sl .box{flex:0 0 140px}
 input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:28px}
 .conv{flex:1;min-width:0;display:flex;align-items:center;height:44px;padding:0 12px;border-radius:12px;background:rgba(255,255,255,.6);font-size:14px;color:var(--muted);white-space:nowrap;gap:6px}
 .conv b{color:var(--ink);font-size:16px}
@@ -122,9 +122,9 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:28px}
 .crow{background:rgba(255,255,255,.7);border-radius:14px;padding:10px;display:flex;flex-direction:column;gap:8px}
 .crow .r1{display:grid;grid-template-columns:minmax(0,1fr) 34px;gap:8px;align-items:center}
 .crow .r2{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.crow .amt{flex:0 0 150px}
+.crow .amt{flex:0 0 170px}
 .crow select{font:inherit;font-size:14px;font-weight:700;color:var(--ink);background:var(--field);border:0;box-shadow:inset 0 0 0 1.5px var(--line);border-radius:12px;height:44px;padding:0 10px}
-.crow .amt select{box-shadow:none;height:auto;padding:0 2px;background:transparent;color:var(--muted)}
+.crow .amt select{box-shadow:none;height:auto;padding:0 2px;background:transparent;color:var(--muted);flex:none;min-width:66px}
 .crow .cv{font-size:13px;color:var(--muted)}
 .crow .cv b{color:var(--ink)}
 .crow .upf{display:flex;align-items:center;gap:8px;font-size:13px;color:#46505E;font-weight:600;cursor:pointer}
@@ -143,8 +143,8 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:28px}
 
 /* Tooltips */
 .tip{border:0;background:rgba(0,0,0,.07);width:20px;height:20px;border-radius:50%;padding:0;font-size:12px;font-weight:900;color:var(--muted);line-height:20px;position:relative;cursor:help;flex:none}
-.tip::after{content:attr(data-tip);position:absolute;z-index:30;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(260px,70vw);background:var(--ink);color:#fff;font-size:13px;font-weight:600;line-height:1.45;padding:9px 11px;border-radius:12px;opacity:0;pointer-events:none;transition:opacity .15s;white-space:normal;text-align:left}
-.tip:hover::after,.tip:focus::after{opacity:1}
+.tip::after{content:attr(data-tip);position:absolute;z-index:30;left:50%;bottom:calc(100% + 8px);transform:translateX(calc(-50% + var(--tx,0px)));width:max-content;max-width:min(260px,calc(100vw - 32px));background:var(--ink);color:#fff;font-size:13px;font-weight:600;line-height:1.45;padding:9px 11px;border-radius:12px;pointer-events:none;white-space:normal;text-align:left;display:none}
+.tip:hover::after,.tip:focus::after{display:block}
 
 /* Donut */
 .donut-card{display:grid;grid-template-columns:280px minmax(0,1fr);gap:28px;align-items:center}
@@ -231,7 +231,22 @@ tbody tr+tr td{border-top:1px solid var(--line)}
 
 @media (max-width:900px){.keys{grid-template-columns:repeat(2,minmax(0,1fr))}.minis{grid-template-columns:repeat(2,minmax(0,1fr))}.donut-card{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:720px){.whatif{grid-template-columns:minmax(0,1fr)}.tips ul{grid-template-columns:minmax(0,1fr)}.answer{flex-direction:column;align-items:flex-start;padding:24px 20px}.answer h2{font-size:23px}}
-@media (max-width:480px){.cloud,.answer .c2{display:none}.keys{grid-template-columns:minmax(0,1fr)}.minis{grid-template-columns:minmax(0,1fr)}.key .val{font-size:34px}.top h1{font-size:25px}.list-row{grid-template-columns:minmax(0,1fr) 110px 34px}}
+@media (max-width:480px){
+  .cloud,.answer .c2{display:none}
+  .keys{grid-template-columns:minmax(0,1fr)}.minis{grid-template-columns:minmax(0,1fr)}
+  .key .val{font-size:34px}.top h1{font-size:25px}
+  .card,.grp{padding:18px}.tips,.answer{padding:22px 18px}
+  .list-row{grid-template-columns:minmax(0,1fr) 34px}
+  .list-row>:nth-child(2){grid-column:1;grid-row:2}
+  .list-row>:nth-child(3){grid-column:2;grid-row:1}
+  .row.sl{flex-wrap:wrap;gap:6px}.row.sl input[type=range]{flex:1 1 100%}.row.sl .box{flex:1 1 100%}
+  .drop{flex-wrap:nowrap}.drop span{white-space:nowrap}.drop input{flex:1;width:auto}
+  .crow .amt{flex:1 1 130px}
+  .crow .r2>select{flex:1 1 auto;min-width:0}
+  .adv-form{flex-wrap:wrap}.adv-form input{flex:1 1 100%}.adv-form .btn{flex:1}
+  .sec-h .toggle{align-self:stretch}
+  .donut{max-width:240px}
+}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -946,6 +961,15 @@ $('dgChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c
 $('dgForm').addEventListener('submit',e=>{e.preventDefault();dgAsk($('dgInput').value)});
 $('dgStop').addEventListener('click',()=>dgCtl?.abort());
 $('dgClear').addEventListener('click',()=>{if(dgBusy)dgCtl?.abort();dgTurns=[];$('dgLog').innerHTML='';$('dgClear').hidden=true});
+
+/* ---------- Keep "?" help bubbles inside the screen ---------- */
+function placeTip(e){
+  const t=e.target.closest&&e.target.closest('.tip'); if(!t)return;
+  const r=t.getBoundingClientRect(), vw=document.documentElement.clientWidth, w=Math.min(260,vw-32);
+  const centre=r.left+r.width/2, left=centre-w/2, clamped=Math.min(Math.max(left,16),vw-16-w);
+  t.style.setProperty('--tx',Math.round(clamped-left)+'px');
+}
+document.addEventListener('pointerover',placeTip); document.addEventListener('focusin',placeTip);
 
 /* ---------- Start ---------- */
 $('dropName').value=S.drop;
