@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Log in · Grip Sock Economics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap">
+<style>
+  :root{color-scheme:light;--bg:#FFFBF5;--card:#FFFFFF;--ink:#2D3748;--muted:#5F6B7A;--line:#F0E8DC;--sky:#BDE0FE;--sky-t:#EEF7FF;--accent:#5B8DC9;--red-t:#FFE3E3;--pink-i:#A8335F;
+    --font:"Nunito",ui-rounded,"SF Pro Rounded","Trebuchet MS",system-ui,sans-serif}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);display:flex;align-items:center;justify-content:center;
+    padding-block:24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .card{position:relative;width:100%;max-width:400px;background:var(--card);border-radius:28px;padding:36px 28px 28px;
+    box-shadow:0 2px 6px rgba(120,90,60,.05),0 10px 30px rgba(120,90,60,.08);display:flex;flex-direction:column;gap:18px}
+  .cloud{position:absolute;right:22px;top:16px;font-size:34px;opacity:.55}
+  .logo{font-size:42px;line-height:1}
+  h1{margin:0;font-size:26px;font-weight:900;letter-spacing:-.02em}
+  p{margin:0;color:var(--muted);font-size:15px;line-height:1.45}
+  form{display:flex;flex-direction:column;gap:14px}
+  label{font-size:14px;font-weight:700;display:flex;flex-direction:column;gap:6px}
+  input{font:inherit;font-size:16px;font-weight:700;color:var(--ink);background:var(--sky-t);border:0;border-radius:14px;height:48px;padding:0 14px;box-shadow:inset 0 0 0 1.5px var(--line);width:100%}
+  input:focus{outline:2px solid var(--accent)}
+  .pw{position:relative}
+  .pw input{padding-right:64px}
+  .show{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:transparent;color:var(--accent);font:inherit;font-size:13px;font-weight:800;cursor:pointer;padding:8px}
+  button[type=submit]{border:0;border-radius:999px;height:50px;background:var(--accent);color:#fff;font:inherit;font-size:16px;font-weight:900;cursor:pointer;margin-top:4px}
+  button[type=submit]:disabled{opacity:.6}
+  :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  .err{background:var(--red-t);color:var(--ink);border-radius:12px;padding:10px 12px;font-size:14px}
+  .err b{color:var(--pink-i)}
+</style>
+</head>
+<body>
+  <main class="card">
+    <span class="cloud" aria-hidden="true">☁️</span>
+    <span class="logo" aria-hidden="true">🧦</span>
+    <div><h1>My Grip Sock Money Plan</h1><p>Log in to see your dashboard.</p></div>
+    <div class="err" id="err" role="alert" hidden><b>That username or password didn't match.</b> Check for typos and try again.</div>
+    <form method="post" action="/login" id="f">
+      <label>Username<input name="username" id="u" autocomplete="username" autocapitalize="none" spellcheck="false" required></label>
+      <label>Password<span class="pw"><input name="password" id="p" type="password" autocomplete="current-password" required><button type="button" class="show" id="show" aria-label="Show password">Show</button></span></label>
+      <button type="submit" id="go">Log in</button>
+    </form>
+    <p style="font-size:13px">You stay logged in on this device for 30 days.</p>
+  </main>
+<script>
+  if (new URLSearchParams(location.search).has('error')) document.getElementById('err').hidden = false;
+  const p = document.getElementById('p'), show = document.getElementById('show');
+  show.addEventListener('click', () => { const on = p.type === 'password'; p.type = on ? 'text' : 'password'; show.textContent = on ? 'Hide' : 'Show'; show.setAttribute('aria-label', on ? 'Hide password' : 'Show password'); });
+  document.getElementById('f').addEventListener('submit', () => { const b = document.getElementById('go'); b.disabled = true; b.textContent = 'Logging in…'; });
+  document.getElementById('u').focus();
+</script>
+</body>
+</html>

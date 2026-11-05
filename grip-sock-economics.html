@@ -257,7 +257,7 @@ tbody tr+tr td{border-top:1px solid var(--line)}
       <h1>🧦 My Grip Sock Money Plan</h1>
       <div class="drop"><span>Current drop:</span><input id="dropName" aria-label="Current drop name" value="Drop 01 · Cloud Grip"></div>
     </div>
-    <span class="save" id="saveState"><i></i><span>Saved</span></span>
+    <div style="display:flex;gap:8px;align-items:center"><span class="save" id="saveState"><i></i><span>Saved</span></span><a class="save" id="logoutLink" href="/logout" hidden style="text-decoration:none;color:var(--ink);font-weight:700">Log out</a></div>
   </header>
 
   <!-- 1. The big answer -->
@@ -970,6 +970,9 @@ function placeTip(e){
   t.style.setProperty('--tx',Math.round(clamped-left)+'px');
 }
 document.addEventListener('pointerover',placeTip); document.addEventListener('focusin',placeTip);
+
+/* Log out link only on the Vercel website (not inside Claude) */
+if(/\.vercel\.app$/.test(location.hostname))$('logoutLink').hidden=false;
 
 /* ---------- Start ---------- */
 $('dropName').value=S.drop;
