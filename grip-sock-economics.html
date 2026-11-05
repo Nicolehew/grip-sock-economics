@@ -132,6 +132,8 @@ input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:28px}
 .moqtot{font-size:14px;background:var(--peach-t);border-radius:10px;padding:8px 12px;color:#46505E}
 .moqtot:empty{display:none}
 .moqtot b{color:var(--peach-i);font-size:16px}
+.moqtot.warn{background:var(--red-t);color:var(--ink)}
+.moqtot.warn b{color:var(--pink-i)}
 .total{font-size:14px;color:var(--muted)}
 .total b{color:var(--ink);font-size:16px}
 .btn{border:0;background:var(--card);box-shadow:var(--shadow);border-radius:999px;padding:10px 18px;font-size:14px;font-weight:800}
@@ -419,7 +421,10 @@ const $=id=>document.getElementById(id);
 const monthWord=n=>n+(n===1?' month':' months');
 
 /* ---------- The money model ---------- */
+// costRM: the amount as typed, in RM. pairRM: what it adds to each pair ('batch' = total for the whole stock order ÷ MOQ).
 const costRM=(c,fx)=>c.per==='pct'?0:(+c.v||0)*(c.cur==='RMB'?fx:1);
+const pairRM=(c,I)=>c.per==='pair'?costRM(c,I.fx):c.per==='batch'?(I.moq>0?costRM(c,I.fx)/I.moq:0):0;
+const isUp=c=>c.per==='batch'||(c.per==='pair'&&c.up);
 function model(I,launchT,fixedM,sc,costs){
   sc=sc||{sales:1,ad:1}; costs=costs||S.costs;
   const cpa=I.cpa*sc.ad, org=Math.min(Math.max(I.organic,0),95)/100;
@@ -429,9 +434,9 @@ function model(I,launchT,fixedM,sc,costs){
   const feeRate=(web*I.gateway+I.shopeePct*I.shopeeFee+I.tiktokPct*I.tiktokFee)/10000;
   const adPer=cpa*(1-org);
   // stock cost per pair = per-pair costs paid when ordering stock
-  const landed=costs.filter(c=>c.per==='pair'&&c.up).reduce((s,c)=>s+costRM(c,I.fx),0);
+  const landed=costs.filter(isUp).reduce((s,c)=>s+pairRM(c,I),0);
   const order=(price,n)=>{
-    const items=costs.map(c=>({n:c.n||'Cost',up:c.per==='pair'&&c.up,v:c.per==='pair'?costRM(c,I.fx)*n:c.per==='order'?costRM(c,I.fx):price*(+c.v||0)/100}));
+    const items=costs.map(c=>({n:c.n||'Cost',up:isUp(c),v:(c.per==='pair'||c.per==='batch')?pairRM(c,I)*n:c.per==='order'?costRM(c,I.fx):price*(+c.v||0)/100}));
     const costSum=items.reduce((s,x)=>s+x.v,0), later=items.filter(x=>!x.up).reduce((s,x)=>s+x.v,0), fees=price*feeRate, before=price-costSum-fees;
     return{price,n,items,costSum,later,fees,ads:adPer,before,keep:before-adPer}};
   const types=[order(prices[0],1),order(prices[1],2),order(prices[2],3)], avg=order(aov,ppo);
@@ -483,10 +488,11 @@ function costHTML(){
     <div class="r1"><div class="box"><input id="cost-n-${i}" aria-label="Cost name" data-cost="${i}" data-f="n" value="${esc(c.n)}" placeholder="Name of cost, e.g. Thank-you card"></div><button type="button" class="x" data-delcost="${i}" aria-label="Remove ${esc(c.n)}">×</button></div>
     <div class="r2">
       <div class="box amt">${c.per==='pct'?'':`<select id="cost-c-${i}" aria-label="Currency" data-cost="${i}" data-f="cur">${opt('RM',c.cur,'RM')}${opt('RMB',c.cur,'RMB')}</select>`}<input id="cost-v-${i}" type="number" inputmode="decimal" step="0.1" min="0" aria-label="${esc(c.n)} amount" data-cost="${i}" data-f="v" value="${c.v}">${c.per==='pct'?'<span>%</span>':''}</div>
-      <select id="cost-p-${i}" aria-label="How this cost is charged" data-cost="${i}" data-f="per">${opt('pair',c.per,'per pair')}${opt('order',c.per,'per order')}${opt('pct',c.per,'% of the price')}</select>
+      <select id="cost-p-${i}" aria-label="How this cost is charged" data-cost="${i}" data-f="per">${opt('pair',c.per,'per pair')}${opt('batch',c.per,'total for my whole stock order')}${opt('order',c.per,'per order')}${opt('pct',c.per,'% of the price')}</select>
       <span class="cv" id="cost-cv-${i}"></span>
     </div>
-    ${c.per==='pair'?`<label class="upf"><input type="checkbox" id="cost-u-${i}" data-cost="${i}" data-f="up" ${c.up?'checked':''}> I pay this when I order stock</label><div class="moqtot" id="cost-t-${i}"></div>`:''}
+    ${c.per==='pair'?`<label class="upf"><input type="checkbox" id="cost-u-${i}" data-cost="${i}" data-f="up" ${c.up?'checked':''}> I pay this when I order stock</label>`:''}
+    <div class="moqtot" id="cost-t-${i}"></div>
   </div>`).join('')}
   <div class="row" style="justify-content:space-between;flex-wrap:wrap"><button type="button" class="add" data-addcost="1">＋ Add a cost</button><span class="total">A 1-pair order costs me: <b class="num" id="tot-costs"></b></span></div></div>`;
 }
@@ -564,15 +570,22 @@ function update(){
   S.costs.forEach((c,i)=>{
     const el=$('cost-cv-'+i);if(el)el.innerHTML=c.cur==='RMB'&&c.per!=='pct'?`= <b>${rm(costRM(c,I.fx),2)}</b>`:'';
     const tt=$('cost-t-'+i);if(!tt)return;
-    if(c.per==='pair'&&c.up){const each=+c.v||0,tot=each*M.stock,totRM=costRM(c,I.fx)*M.stock;
-      tt.innerHTML=`📦 ${c.cur} ${nf(each,2)} × ${nf(M.stock)} pairs (your MOQ) = <b>${c.cur==='RMB'?`RMB ${nf(tot)}</b> = <b>${rm(totRM)}`:rm(totRM)}</b> for your first order`;
+    const amt=+c.v||0, money=v=>c.cur==='RMB'?`RMB ${nf(v,v<100?2:0)}`:rm(v,v<100?2:0);
+    tt.className='moqtot';
+    if(c.per==='pair'&&costRM(c,I.fx)>I.price1){
+      tt.className='moqtot warn';
+      tt.innerHTML=`⚠️ This says <b>${money(amt)} for every pair</b>, which is more than your price of ${rm(I.price1)}. If ${money(amt)} is what you pay for your whole order, change "per pair" to <b>"total for my whole stock order"</b>.`;
+    }else if(c.per==='pair'&&c.up){
+      tt.innerHTML=`📦 ${money(amt)} × ${nf(M.stock)} pairs (your MOQ) = <b>${c.cur==='RMB'?`RMB ${nf(amt*M.stock)}</b> = <b>${rm(costRM(c,I.fx)*M.stock)}`:rm(costRM(c,I.fx)*M.stock)}</b> for your first order`;
+    }else if(c.per==='batch'){
+      tt.innerHTML=M.stock>0?`📦 ${money(amt)}${c.cur==='RMB'?` (= ${rm(costRM(c,I.fx))})`:''} ÷ ${nf(M.stock)} pairs (your MOQ) = <b>${rm(pairRM(c,I),2)} per pair</b>`:'📦 Set your MOQ in the Stock box so this can be split per pair.';
     }else tt.innerHTML='';
   });
   $('tot-costs').textContent=rm(M.types[0].costSum,2);
-  $('dv-cost').innerHTML=`Your stock costs <b>${rm(M.landed,2)}</b> a pair (the costs ticked "I pay this when I order stock"). Everything else is paid as you sell.`;
+  $('dv-cost').innerHTML=`Your stock costs <b>${rm(M.landed,2)}</b> a pair (whole-order costs, plus per-pair costs ticked "I pay this when I order stock"). Everything else is paid as you sell.`;
   $('dv-mix').innerHTML=`Your own website gets the other <b>${nf(M.web)}%</b> of orders. Across all three, fees take <b>${pc(M.feeRate,1)}</b> of each sale.`;
-  const upRows=S.costs.filter(c=>c.per==='pair'&&c.up);
-  $('dv-stock').innerHTML=`${nf(M.stock)} pairs cost you <b>${rm(M.invCost)}</b>${upRows.length>1?` (${upRows.map(c=>`${esc(c.n||'cost')} ${rm(costRM(c,I.fx)*M.stock)}`).join(' + ')})`:''}. At ${nf(M.pairsPM)} pairs a month they last about <b>${isFinite(M.sellOut)?monthWord(Math.round(M.sellOut*10)/10):'forever'}</b>.`;
+  const upRows=S.costs.filter(isUp);
+  $('dv-stock').innerHTML=`${nf(M.stock)} pairs cost you <b>${rm(M.invCost)}</b>${upRows.length>1?` (${upRows.map(c=>`${esc(c.n||'cost')} ${rm(pairRM(c,I)*M.stock)}`).join(' + ')})`:''}. At ${nf(M.pairsPM)} pairs a month they last about <b>${isFinite(M.sellOut)?monthWord(Math.round(M.sellOut*10)/10):'forever'}</b>.`;
   $('dv-ads').innerHTML=M.adNeedPM>I.adBudget*1.05?`To sell ${nf(M.pairsPM)} pairs a month you'd spend about <b>${rm(M.adNeedPM)}</b> on ads, which is more than your budget.`:`To sell ${nf(M.pairsPM)} pairs a month you'd spend about <b>${rm(M.adNeedPM)}</b> on ads. That fits your budget.`;
   $('tot-launch').textContent=rm(M.launchT); $('tot-fixed').textContent=rm(M.fixedM);
 
@@ -624,7 +637,8 @@ function renderDonut(M){
   let svg=`<svg viewBox="0 0 100 100" role="img" aria-label="Out of ${rm(price,2)}, you keep ${rm(o.keep/n,2)}"><circle cx="50" cy="50" r="${r}" fill="none" stroke="#F3EEE6" stroke-width="16"/>`;
   parts.forEach(p=>{const len=p.v/total*C;if(len>0.01)svg+=`<circle cx="50" cy="50" r="${r}" fill="none" stroke="${p.c}" stroke-width="16" stroke-dasharray="${Math.max(0.01,len-0.7)} ${C}" stroke-dashoffset="${-off}"/>`;off+=len});
   $('donutSvg').innerHTML=svg+'</svg>';
-  $('dnKeep').textContent=rm(o.keep/n,2);
+  $('dnKeep').textContent=rm(Math.abs(o.keep/n),2); $('dnKeep').style.color=o.keep<0?'var(--pink-i)':'';
+  document.querySelector('.donut .mid small').textContent=o.keep<0?'I lose':'I keep';
   $('legend').innerHTML=parts.map(p=>`<div class="leg ${p.l==='I keep'?'keep':''}"><i style="background:${p.c}"></i><span>${esc(p.l)}</span><b class="num">${p.l==='I keep'?rm(o.keep/n,2):rm(p.v,2)}</b></div>`).join('');
   $('dnCaption').textContent=o.keep>0?`Out of ${rm(price,2)}, you keep ${rm(o.keep/n,2)}.`:`Out of ${rm(price,2)}, you lose ${rm(-o.keep/n,2)}.`;
 }
@@ -766,7 +780,7 @@ function advFacts(){
     `Brand / drop: ${S.drop}. Product: Pilates grip socks, sold in Malaysia.`,
     `Prices: 1 pair RM ${nf(I.price1,2)}, 2 pairs RM ${nf(I.price2,2)}, 3 pairs RM ${nf(I.price3,2)}. ${I.bundlePct}% of orders are bundles.`,
     `Planned sales: ${nf(I.pairsPerMonth)} pairs a month (about ${nf(m.ordersPM)} orders).`,
-    `Costs for each sale (exchange rate RM ${I.fx} per RMB): ${S.costs.map(c=>`${c.n||'Unnamed cost'} ${c.per==='pct'?nf(+c.v||0,1)+'% of the price':(c.cur==='RMB'?`RMB ${nf(+c.v||0,2)} (= RM ${nf(costRM(c,I.fx),2)})`:`RM ${nf(+c.v||0,2)}`)+(c.per==='pair'?' per pair':' per order')}${c.per==='pair'&&c.up?', paid upfront with the stock':''}`).join('; ')}. Stock costs RM ${nf(m.landed,2)} a pair.`,
+    `Costs for each sale (exchange rate RM ${I.fx} per RMB): ${S.costs.map(c=>`${c.n||'Unnamed cost'} ${c.per==='pct'?nf(+c.v||0,1)+'% of the price':(c.cur==='RMB'?`RMB ${nf(+c.v||0,2)} (= RM ${nf(costRM(c,I.fx),2)})`:`RM ${nf(+c.v||0,2)}`)+(c.per==='pair'?' per pair':c.per==='batch'?` for the whole stock order (RM ${nf(pairRM(c,I),2)} per pair)`:' per order')}${isUp(c)?', paid upfront with the stock':''}`).join('; ')}. Stock costs RM ${nf(m.landed,2)} a pair.`,
     `Where the founder sells: own website ${nf(m.web)}% of orders (card fee ${I.gateway}%), Shopee ${I.shopeePct}% (fees ${I.shopeeFee}%), TikTok Shop ${I.tiktokPct}% (fees ${I.tiktokFee}%).`,
     `First stock order (MOQ): ${nf(m.stock)} pairs costing RM ${nf(m.invCost)}.`,
     `Start-up costs: ${list(S.launch)} (total RM ${nf(m.launchT)}). Monthly bills: ${list(S.fixed)} (total RM ${nf(m.fixedM)} a month).`,
