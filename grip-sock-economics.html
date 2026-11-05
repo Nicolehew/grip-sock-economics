@@ -69,6 +69,38 @@ button{font:inherit;color:inherit;cursor:pointer}
 .dot{flex:none;width:9px;height:9px;border-radius:50%;margin-top:5px;background:var(--muted)}
 .dot.good{background:var(--good)}.dot.warn{background:var(--warn)}.dot.bad{background:var(--bad)}
 
+/* Advisor */
+.adv{display:flex;flex-direction:column;gap:16px}
+.adv-head{display:flex;gap:14px;align-items:flex-start}
+.adv-head p{margin:4px 0 0;color:var(--muted);font-size:14px;max-width:80ch}
+.adv-avatar{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:var(--sky-soft);color:var(--accent)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:500;color:var(--ink);transition:background .15s,border-color .15s}
+.chip:hover{background:var(--sky-soft);border-color:var(--sky)}
+.chip:disabled,.adv-form button:disabled{opacity:.5;cursor:default}
+.adv-log{display:flex;flex-direction:column;gap:12px}
+.adv-log:empty{display:none}
+.bub{max-width:min(78ch,100%);border-radius:16px;padding:12px 16px;font-size:14.5px;line-height:1.55;overflow-wrap:anywhere}
+.bub.me{align-self:flex-end;background:var(--accent);color:#fff;border-bottom-right-radius:6px}
+:root[data-theme="dark"] .bub.me{color:#0E151D}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bub.me{color:#0E151D}}
+.bub.ai{align-self:flex-start;background:var(--field);border-bottom-left-radius:6px}
+.bub.ai p{margin:0 0 8px}.bub.ai p:last-child{margin:0}
+.bub.ai ul{margin:4px 0 8px;padding-left:20px;display:flex;flex-direction:column;gap:6px}
+.bub.ai.wait{color:var(--muted)}
+.bub.err{background:var(--bad-soft)}
+.adv-form{display:flex;gap:8px}
+.adv-form input{flex:1;min-width:0;font:inherit;color:var(--ink);background:var(--field);border:0;border-radius:12px;padding:0 14px;height:44px}
+.adv-form input:focus{outline:2px solid var(--sky)}
+.btn.primary{background:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#0E151D}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#0E151D}}
+.adv-foot{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.linkbtn{border:0;background:none;padding:0;color:var(--accent);font-size:12px;text-decoration:underline}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.adv-off{background:var(--field);border-radius:12px;padding:14px 16px;font-size:14px;color:var(--muted)}
+.adv-off a{color:var(--accent)}
+
 /* Tooltips */
 .tip{border:0;background:transparent;padding:0 2px;color:var(--muted);font-size:12px;line-height:1;position:relative;text-transform:none;letter-spacing:0;cursor:help}
 .tip::after{content:attr(data-tip);position:absolute;z-index:20;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);width:max-content;max-width:min(250px,70vw);background:var(--ink);color:var(--bg);font-size:12px;font-weight:400;line-height:1.45;padding:8px 10px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .15s;white-space:normal;text-align:left}
@@ -207,6 +239,30 @@ td.hl,th.hl{background:var(--sky-soft)}
     <div class="card kpi"><div class="lab">Ads must bring in <button class="tip" data-tip="The least each RM 1 of ads has to bring back in sales so you don't lose money on those orders. Pros call this break-even ROAS.">ⓘ</button></div><div class="val num" id="k-roas">–</div><div class="why"><span class="dot" id="d-roas"></span><span id="w-roas"></span></div></div>
     <div class="card kpi"><div class="lab">Money back in <button class="tip" data-tip="How long until sales have paid back what you spent on stock and launch, so your bank balance is back where it started. Pros call this the payback period.">ⓘ</button></div><div class="val num" id="k-pay">–</div><div class="why"><span class="dot" id="d-pay"></span><span id="w-pay"></span></div></div>
     <div class="card kpi"><div class="lab">Money in the bank <button class="tip" data-tip="What your bank balance should be at the end: your starting cash, minus what you paid for stock and launch, plus what sales bring in after ads and monthly bills.">ⓘ</button></div><div class="val num" id="k-cash">–</div><div class="why"><span class="dot" id="d-cash"></span><span id="w-cash"></span></div></div>
+  </section>
+
+  <!-- 2b. Advisor -->
+  <section class="card adv" aria-labelledby="h-adv">
+    <div class="adv-head">
+      <div class="adv-avatar" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 11h.01M12 11h.01M15.5 11h.01"/></svg></div>
+      <div style="min-width:0"><h2 id="h-adv">Ask your advisor</h2><p>A sales and marketing expert for Malaysian online brands reads the numbers on this page and tells you what looks reasonable, what looks risky, and what to do next. Change a number and ask again to see how the advice changes.</p></div>
+    </div>
+    <div class="chips" id="advChips">
+      <button type="button" class="chip" data-q="Give me a full review of my plan. What looks reasonable, what looks risky, and what should I fix first?">Review my whole plan</button>
+      <button type="button" class="chip" data-q="Is my ad budget and my expected ad cost per order reasonable for a grip sock brand in Malaysia? What should I expect in the first month?">Is my ad cost reasonable?</button>
+      <button type="button" class="chip" data-q="Are my startup costs reasonable? Look at my stock order, launch costs and monthly bills. Am I spending too much or too little anywhere?">Are my startup costs reasonable?</button>
+      <button type="button" class="chip" data-q="Is my price right for Pilates grip socks in Malaysia? Are my bundle prices set well?">Is my price right?</button>
+      <button type="button" class="chip" data-q="How should I split sales between my own website, Shopee and TikTok Shop when I launch?">Website, Shopee or TikTok?</button>
+      <button type="button" class="chip" data-q="What are the first 5 things I should do in the next 30 days to launch this well?">What should I do first?</button>
+    </div>
+    <div class="adv-log" id="advLog" aria-live="polite"></div>
+    <form class="adv-form" id="advForm">
+      <label for="advInput" class="sr">Your question</label>
+      <input id="advInput" autocomplete="off" placeholder="Or type your own question, e.g. Should I order fewer pairs at first?">
+      <button type="submit" class="btn primary" id="advSend">Ask</button>
+      <button type="button" class="btn" id="advStop" hidden>Stop</button>
+    </form>
+    <div class="adv-foot"><span id="advNote">Advice is a general guide based on what's typical for small online brands, not a guarantee. Each question uses your own Claude account.</span><button type="button" class="linkbtn" id="advClear" hidden>Start a new conversation</button></div>
   </section>
 
   <!-- 3. Inputs -->
@@ -722,6 +778,94 @@ function save(){
     saveLbl('Saved');
   }catch(e){saveLbl('Saved on this device')}
 })();
+
+/* ---------- Advisor (asks Claude with the viewer's own account) ---------- */
+const ARTIFACT_URL='https://claude.ai/artifact/PQoyAAv2gD1E628VEFwF3G';
+let advSample=null, advTurns=[], advCtl=null, advBusy=false;
+const advReady=(async()=>{
+  try{ if(!window.claude?.use) return null; advSample=await claude.use('sample'); return advSample; }catch(e){ return null }
+})();
+function advOff(msg){
+  $('advChips').hidden=true; $('advForm').hidden=true; $('advClear').hidden=true;
+  $('advNote').innerHTML=msg;
+  $('advNote').className='adv-off';
+}
+advReady.then(s=>{ if(!s) advOff(`The advisor works when you open this dashboard inside Claude: <a href="${ARTIFACT_URL}" target="_blank" rel="noopener">open it in Claude</a>.`) });
+
+function advFacts(){
+  const R=runAll(), b=R.base, w=R.worst, g=R.best, I=S.inputs;
+  const list=a=>a.map(r=>`${r.n} RM ${nf(+r.v||0)}`).join(', ');
+  return [
+    `Brand / drop: ${S.drop}. Product: Pilates grip socks, sold in Malaysia.`,
+    `Prices: 1 pair RM ${nf(I.price1,2)}, 2 pairs RM ${nf(I.price2,2)}, 3 pairs RM ${nf(I.price3,2)}. ${I.bundlePct}% of orders are bundles; ${I.threeShare}% of bundle buyers pick 3 pairs.`,
+    `Factory price RMB ${nf(I.unitCostRMB,2)} a pair (= RM ${nf(I.unitCost,2)} at RM ${I.fx} per RMB). Shipping from China + import RM ${nf(I.freight,2)} a pair (an estimate, no quote yet). Packaging RM ${nf(I.packaging,2)} a pair. Delivery to customer RM ${nf(I.shipping,2)} an order, ${I.shipMode==='absorbed'?'paid by the founder (free shipping for the customer)':'paid by the customer'}.`,
+    `Where the founder sells: own website ${nf(b.web)}% of orders (card fee ${I.gateway}%), Shopee ${I.shopeePct}% (fees ${I.shopeeFee}%), TikTok Shop ${I.tiktokPct}% (fees ${I.tiktokFee}%).`,
+    `Stock: ${I.moqPerSize} pairs per size x ${I.sizes} sizes = ${nf(b.stock)} pairs, costing RM ${nf(b.invCost)} landed. The founder expects to sell ${I.sellThrough}% of it in ${b.N} months.`,
+    `One-time launch costs: ${list(S.launch)} (total RM ${nf(b.launchTotal)}).`,
+    `Monthly bills: ${list(S.fixed)} (total RM ${nf(b.fixedMonthly)} a month).`,
+    `Ads: budget up to RM ${nf(I.adBudget)} a month, expected ad cost per order RM ${nf(I.cpa,2)}, ${I.organic}% of orders expected without ads.`,
+    `Starting cash: RM ${nf(I.capital)}.`,
+    `Dashboard results, expected case: typical order RM ${nf(b.aov,2)} (${nf(b.ppo,2)} pairs). Per typical order the founder keeps RM ${nf(b.avg.cmB,2)} before ads and RM ${nf(b.avg.cmA,2)} after ads (${pc(b.avg.cmA/b.aov)} of the price). Ads stop paying above RM ${nf(b.beCPA,2)} per order. Over ${b.N} months: ${nf(b.T.units)} pairs sold, sales RM ${nf(b.T.rev)}, ad spend RM ${nf(b.T.ad)}, profit RM ${nf(b.net)}, return on money ${pc(b.roi)}, money back by ${b.payback?'month '+b.payback:'never at this pace'}, lowest bank balance RM ${nf(b.minCash)}.`,
+    `Slow case (ad cost +${I.cpaSwing}%, ${I.worstST}% of stock sold): profit RM ${nf(w.net)}. Great case (ad cost -${I.cpaSwing}%, ${I.bestST}% sold): profit RM ${nf(g.net)}.`
+  ].join('\n');
+}
+function advRules(){
+  return `You are an experienced e-commerce sales and marketing advisor. You have helped many small consumer and activewear brands launch in Malaysia on Shopee, TikTok Shop and their own Shopify websites, using Meta and TikTok ads.
+
+You are advising a first-time founder launching Pilates grip socks. They are not from a finance background. Write in plain, friendly everyday English with no jargon. If you must use a term like CPA, ROAS or MOQ, explain it in a few words. Use RM for money.
+
+Judge their numbers against what is typical for small Malaysian online brands in this kind of category. Give typical figures as rough ranges and say they vary by product and creative. Never present a guess as a hard fact, and never invent statistics, studies or sources. Be honest and direct: if something looks too optimistic or too expensive, say so, explain why in one sentence, and say what they should check or do instead. If a number is fine, say so briefly; don't pad.
+
+Format your reply like this:
+- First line: a one-sentence answer to their question.
+- Then 3 to 6 short bullet points, each starting with "- " and then **Reasonable**, **Check this** or **Risky** in bold, followed by the point.
+- Last line: "Next step:" and one concrete action.
+Keep it under 220 words. No headings, no tables, no emojis.
+
+Their current numbers from the dashboard (these update every time they ask):
+${advFacts()}`;
+}
+function advMd(t){
+  const inline=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');
+  let out='',list=false;
+  for(const raw of t.split('\n')){
+    const line=raw.trim();
+    const li=line.match(/^([-*•]|\d+[.)])\s+(.*)/);
+    if(li){ if(!list){out+='<ul>';list=true} out+=`<li>${inline(li[2])}</li>`; continue; }
+    if(list){out+='</ul>';list=false}
+    if(line) out+=`<p>${inline(line)}</p>`;
+  }
+  return out+(list?'</ul>':'');
+}
+function advBubble(cls,html){const d=document.createElement('div');d.className='bub '+cls;d.innerHTML=html;$('advLog').append(d);return d}
+function advSetBusy(on){
+  advBusy=on; $('advSend').disabled=on; $('advStop').hidden=!on;
+  document.querySelectorAll('#advChips .chip').forEach(c=>c.disabled=on);
+}
+async function advAsk(q){
+  q=q.trim(); if(!q||advBusy) return;
+  const sample=advSample||await advReady; if(!sample) return;
+  advBubble('me',esc(q)); $('advInput').value=''; $('advClear').hidden=false;
+  const bub=advBubble('ai wait','Reading your numbers…');
+  advTurns.push({role:'user',content:q});
+  const input=[{role:'user',content:advRules()},...advTurns.slice(-9)];
+  advCtl=new AbortController(); advSetBusy(true);
+  try{
+    const {text,truncated}=await sample(input,{cache:false,signal:advCtl.signal,onText:({text})=>{bub.className='bub ai';bub.innerHTML=advMd(text)}});
+    bub.className='bub ai'; bub.innerHTML=advMd(text)+(truncated?'<p class="muted">(The answer was cut short. Ask a narrower question for the rest.)</p>':'');
+    advTurns.push({role:'assistant',content:text});
+  }catch(e){
+    advTurns.pop();
+    const code=e&&e.code;
+    if(code==='cancelled'){ bub.className='bub ai'; bub.innerHTML=e.text?advMd(e.text)+'<p class="muted">(Stopped.)</p>':'<p class="muted">Stopped.</p>'; }
+    else if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(code)){ bub.remove(); advOff('The advisor needs permission to use Claude. Reload the page and choose Allow when Claude asks, to turn it on.'); }
+    else{ bub.className='bub ai err'; bub.innerHTML=(e&&e.text?advMd(e.text):'')+`<p>${code==='rate_limited'?'Too many questions in a short time. Wait a minute and ask again.':code==='session_expired'?'You have been signed out of Claude. Sign in again, then ask.':code==='refused'?'The advisor could not answer that one. Try asking it a different way.':'Something went wrong getting an answer. Try asking again.'}</p>`; }
+  }finally{ advSetBusy(false); advCtl=null; }
+}
+$('advChips').addEventListener('click',e=>{const c=e.target.closest('.chip'); if(c) advAsk(c.dataset.q)});
+$('advForm').addEventListener('submit',e=>{e.preventDefault(); advAsk($('advInput').value)});
+$('advStop').addEventListener('click',()=>advCtl?.abort());
+$('advClear').addEventListener('click',()=>{ if(advBusy) advCtl?.abort(); advTurns=[]; $('advLog').innerHTML=''; $('advClear').hidden=true; });
 
 /* ---------- Theme toggle ---------- */
 const root=document.documentElement;
