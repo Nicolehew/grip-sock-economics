@@ -252,7 +252,7 @@ tbody tr+tr td{border-top:1px solid var(--line)}
   <section class="sec" aria-labelledby="h-keys">
     <h2 id="h-keys">⭐ My 4 key numbers</h2>
     <div class="keys">
-      <div class="key t-pink"><span class="ic" aria-hidden="true">💰</span><span class="lab">Money I need to start</span><span class="val num" id="k-need">–</span><span class="why" id="w-need"></span></div>
+      <div class="key t-pink"><span class="ic" aria-hidden="true">💰</span><span class="lab" id="l-need">My total start-up money</span><span class="val num" id="k-need">–</span><span class="why" id="w-need"></span></div>
       <div class="key t-mint"><span class="ic" aria-hidden="true">🧦</span><span class="lab">How much I keep per pair</span><span class="val num" id="k-keep">–</span><span class="why" id="w-keep"></span></div>
       <div class="key t-sky"><span class="ic" aria-hidden="true">📅</span><span class="lab">When I get my money back</span><span class="val num" id="k-back">–</span><span class="why" id="w-back"></span></div>
       <div class="key t-mint"><span class="ic" aria-hidden="true">📈</span><span class="lab" id="l-profit">Total profit</span><span class="val num" id="k-profit">–</span><span class="why" id="w-profit"></span></div>
@@ -362,7 +362,7 @@ const clone=o=>JSON.parse(JSON.stringify(o));
 /* Every input: label, unit, plain-English tip */
 const F={
   months:{l:'Plan for how many months',u:'months',min:1,max:24,step:1,tip:'The page works out your sales and profit over this many months.'},
-  savings:{l:'My total budget to start (for comparison only)',pre:'RM',min:0,step:500,tip:'The total amount you can put in to start, socks included. It is NOT added to your costs. The page only checks it against "Money I need to start", which it adds up from your Costs, Stock and Start-up boxes.'},
+  savings:{l:'My total start-up money (everything included)',pre:'RM',min:0,step:500,tip:'All the money you are putting in to start: stock, samples, photoshoot, and whatever is left over for ads and bills. The page shows how this amount gets used. Set it to 0 if you want the page to work out how much you need instead.'},
   price1:{l:'Price per pair',pre:'RM',slider:[20,150,1],tip:'What a customer pays for one pair.'},
   price2:{l:'Bundle price (2 pairs)',pre:'RM',min:0,step:1,tip:'What a customer pays for 2 pairs together.'},
   pairsPerMonth:{l:'Pairs I expect to sell per month',u:'pairs',slider:[10,1000,5],tip:'Your best guess of how many pairs you sell in a normal month, counting singles and bundles.'},
@@ -603,13 +603,21 @@ function update(){
   else if(M.payback<=M.N&&adOK){cls='good';face='🥳';title=`Your plan looks healthy! You'll get your money back in about ${monthWord(M.payback)}.`;sub=`You keep ${rm(M.keepPair,2)} on every pair and make ${rm(M.profitN)} profit in ${monthWord(M.N)}.`}
   else if(!adOK){cls='warn';face='🤔';title='Almost there. Your ad budget is too small for the sales you planned.';sub=`Selling ${nf(M.pairsPM)} pairs a month needs about ${rm(M.adNeedPM)} of ads, but your budget is ${rm(I.adBudget)}. Raise the budget, plan fewer sales, or bring down the ad cost per order.`}
   else{cls='warn';face='🤔';title=`Almost there. You'll get your money back in about ${monthWord(M.payback)}, which is a bit slow.`;sub='Try raising your price or lowering your ad cost to get your money back sooner.'}
-  if(I.savings>0&&M.need>I.savings)sub+=` Also, you need ${rm(M.need)} to start, but your budget is ${rm(I.savings)}.`;
+  if(I.savings>0&&M.need>I.savings)sub+=` Also, stock and start-up costs come to ${rm(M.need)}, more than your ${rm(I.savings)} start-up money.`;
   if(M.extra>1)sub+=` After launch, your costs are bigger than your sales, so you'd need another ${rm(M.extra)} by Month ${M.extraM}. Check that no cost in the Costs box is a total entered as "per pair" or "per order".`;
   $('answer').className='answer '+cls; $('ansFace').textContent=face; $('ansTitle').textContent=title; $('ansSub').textContent=sub;
 
   // 2. Key numbers
-  anim($('k-need'),M.need,v=>rm(v));
-  $('w-need').textContent=`Stock ${rm(M.invCost)} + other start-up costs ${rm(M.launchT)}, paid before your first sale. ${M.extra>1?`⚠️ Sales don't cover your costs after launch: you'd need another ${rm(M.extra)} by Month ${M.extraM}. `:''}${I.savings>0?(M.need<=I.savings?`✅ Within your ${rm(I.savings)} budget.`:`⚠️ ${rm(M.need-I.savings)} more than your ${rm(I.savings)} budget.`):''}`;
+  const hasBudget=I.savings>0;
+  $('l-need').textContent=hasBudget?'My total start-up money':'Money I need to start';
+  anim($('k-need'),hasBudget?I.savings:M.need,v=>rm(v));
+  const left=I.savings-M.need;
+  const lossNote=M.extra>1?` ⚠️ After launch, sales don't cover your costs: you'd use another ${rm(M.extra)} by Month ${M.extraM}${hasBudget&&M.extra>left?`, more than the ${rm(Math.max(0,left))} you have left`:''}.`:'';
+  $('w-need').textContent=hasBudget
+    ? (left>=0
+        ? `Stock ${rm(M.invCost)} + other start-up costs ${rm(M.launchT)} = ${rm(M.need)} spent before your first sale. ✅ ${rm(left)} left for ads and monthly bills.`
+        : `⚠️ Stock ${rm(M.invCost)} + other start-up costs ${rm(M.launchT)} = ${rm(M.need)}. That's ${rm(-left)} more than your start-up money.`)+lossNote
+    : `Stock ${rm(M.invCost)} + other start-up costs ${rm(M.launchT)}, paid before your first sale.`+lossNote;
   anim($('k-keep'),M.keepPair,v=>rm(v,2));
   $('w-keep').textContent='After all your costs, platform fees and ads. Monthly bills come out of the total.';
   const kb=$('k-back');
@@ -629,7 +637,7 @@ function update(){
     mini(`Spent on ads in ${monthWord(M.N)}`,rm(M.T.ad),`About ${rm(M.T.ad/M.N)} a month.`),
     mini('Pairs left at the end',nf(M.stockLeft),M.stockLeft>0?`Worth ${rm(M.stockLeft*M.landed)} at cost, waiting to be sold.`:'You sell out within the plan.'),
     mini('Month I start making a profit',M.profitMonth?'Month '+M.profitMonth:'Not yet','When sales have covered every cost so far, counting stock only as it sells.'),
-    mini('My total budget to start',rm(I.savings),M.need>I.savings?`${rm(M.need-I.savings)} short of what you need.`:`Enough, with ${rm(I.savings-M.need)} to spare.`)
+    mini('Stock + start-up costs',rm(M.need),I.savings>0?(M.need>I.savings?`${rm(M.need-I.savings)} more than your start-up money.`:`Leaves ${rm(I.savings-M.need)} of your ${rm(I.savings)} for ads and bills.`):'Paid before your first sale.')
   ].join('');
 
   renderDonut(M); renderChart(M); renderWhatIf(R); renderCheckin(); renderExBadge(); renderTips(M);
@@ -739,7 +747,7 @@ function renderTips(M){
   if(/deliver|ship|courier|postage/i.test(big[0]))t.push(['🚚',`${big[0]} is your biggest cost per order (${rm(big[1],2)}). Try free delivery only above a minimum spend, like 2 pairs.`]);
   else if(big[0]==='ads')t.push(['📱',`Ads are your biggest cost per order (${rm(big[1],2)}). Free posts on TikTok and Instagram, and Pilates studio partners, bring orders with no ad cost.`]);
   else t.push(['💡',`Your biggest cost per order is ${esc(big[0])} (${rm(big[1],2)}). Small savings there add up fastest.`]);
-  if(I.savings>0&&M.need>I.savings)t.unshift(['💵',`You need ${rm(M.need)} to start, but your budget is ${rm(I.savings)}. Order fewer pairs or cut start-up costs.`]);
+  if(I.savings>0&&M.need>I.savings)t.unshift(['💵',`Stock and start-up costs come to ${rm(M.need)}, more than your ${rm(I.savings)} start-up money. Order fewer pairs or cut start-up costs.`]);
   $('tips').innerHTML=t.slice(0,4).map(([e,x])=>`<li><span class="e" aria-hidden="true">${e}</span><span>${x}</span></li>`).join('');
 }
 
@@ -793,7 +801,7 @@ function advFacts(){
     `First stock order (MOQ): ${nf(m.stock)} pairs costing RM ${nf(m.invCost)}.`,
     `Start-up costs: ${list(S.launch)} (total RM ${nf(m.launchT)}). Monthly bills: ${list(S.fixed)} (total RM ${nf(m.fixedM)} a month).`,
     `Ads: budget RM ${nf(I.adBudget)} a month, expected ad cost to get 1 order RM ${nf(I.cpa,2)}, ${I.organic}% of orders expected without ads. The planned sales need about RM ${nf(m.adNeedPM)} of ads a month.`,
-    `Total budget the founder has to start (socks included): RM ${nf(I.savings)}.`,
+    `Total start-up money the founder is putting in, everything included (stock, start-up costs, and money left for ads and bills): RM ${nf(I.savings)}. Of this, stock + start-up costs use RM ${nf(runAll().mid.need)}.`,
     `Dashboard results (normal case): money needed to start RM ${nf(m.need)}. Keeps RM ${nf(m.keepPair,2)} per pair after all costs, fees and ads. Money back in ${m.payback?'month '+m.payback:'never at this pace'}. Profit after ${m.N} months RM ${nf(m.profitN)}.`,
     `Bad month (sales -${I.swing}%, ads +${I.swing}%): profit RM ${nf(R.bad.profitN)}. Great month (sales +${I.swing}%, ads -${I.swing}%): profit RM ${nf(R.great.profitN)}.`
   ].join('\n');
