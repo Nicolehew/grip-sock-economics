@@ -678,7 +678,7 @@ function renderDonut(M){
   $('dnKeep').textContent=rm(Math.abs(o.keep/n),2); $('dnKeep').style.color=o.keep<0?'var(--pink-i)':'';
   document.querySelector('.donut .mid small').textContent=o.keep<0?'I lose':'I keep';
   $('legend').innerHTML=parts.map(p=>`<div class="leg ${p.l==='I keep'?'keep':''}"><i style="background:${p.c}"></i><span>${esc(p.l)}</span><b class="num">${p.l==='I keep'?rm(o.keep/n,2):rm(p.v,2)}</b></div>`).join('');
-  const losing=M.avg.keep<0||M.profitN<0, fb=$('dgFirst');
+  const losing=o.keep<0||M.avg.keep<0||M.profitN<0, fb=$('dgFirst');
   if(fb){fb.textContent=losing?'Why am I losing money?':'Where can I keep more?';fb.dataset.q=losing?'Why am I losing money? Look at where my RM goes for each sale and tell me exactly which numbers cause it.':'I am making money. Where is the biggest leak in where my RM goes, and how could I keep more from each sale?'}
   $('dnCaption').textContent=o.keep>0?`Out of ${rm(price,2)}, you keep ${rm(o.keep/n,2)}.`:`Out of ${rm(price,2)}, you lose ${rm(-o.keep/n,2)}.`;
 }
