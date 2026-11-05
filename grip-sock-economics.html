@@ -601,6 +601,9 @@ function update(){
     if(c.per==='pair'&&costRM(c,I.fx)>I.price1){
       tt.className='moqtot warn';
       tt.innerHTML=`⚠️ This says <b>${money(amt)} for every pair</b>, which is more than your price of ${rm(I.price1)}. If ${money(amt)} is what you pay for your whole order, change "per pair" to <b>"total for my whole stock order"</b>.`;
+    }else if(c.per==='pair'&&!/sock|supplier|factory/i.test(c.n||'')&&costRM(c,I.fx)>I.price1*0.3){
+      tt.className='moqtot warn';
+      tt.innerHTML=`⚠️ <b>${money(amt)} for every pair</b> is ${pc(costRM(c,I.fx)/I.price1)} of your ${rm(I.price1)} price, which is very high for this kind of cost. If ${money(amt)} is the total for your whole order, change "per pair" to <b>"total for my whole stock order"</b>.${c.up?` Right now it adds ${rm(costRM(c,I.fx)*M.stock)} to your stock cost.`:''}`;
     }else if(c.per==='order'&&costRM(c,I.fx)>I.price1){
       tt.className='moqtot warn';
       tt.innerHTML=`⚠️ This says <b>${money(amt)} for every order</b>, which is more than your price of ${rm(I.price1)}. If it's a one-time cost, delete it here and add it under 🌸 Start-up costs. If it's a total for your stock, choose <b>"total for my whole stock order"</b>.`;
