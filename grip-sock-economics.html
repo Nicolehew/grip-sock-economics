@@ -207,6 +207,10 @@ tbody tr+tr td{border-top:1px solid var(--line)}
 /* Advisor */
 .adv{display:flex;flex-direction:column;gap:16px;background:var(--lav-t)}
 .adv.agent{background:var(--mint-t)}
+.adv.mr{background:var(--peach-t)}
+.adv.mr .chip:hover{background:var(--peach)}
+.adv.mr .bub.me{background:var(--peach-i)}
+.adv.mr .btn.primary{background:var(--peach-i)}
 .adv.agent .chip:hover{background:var(--mint)}
 .adv.agent .bub.me{background:var(--mint-i)}
 .adv.agent .btn.primary{background:var(--mint-i)}
@@ -339,6 +343,27 @@ tbody tr+tr td{border-top:1px solid var(--line)}
       <summary>Change how bad or great it gets <svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M6 9l6 6 6-6"/></svg></summary>
       <div class="in" id="wiSettings"></div>
     </details>
+  </section>
+
+  <!-- 6b. Market research -->
+  <section class="card adv mr" aria-labelledby="h-mr">
+    <div><h2 id="h-mr">🔍 Market research</h2><p class="muted" style="margin-top:4px">Ask whether customers will pay your price, who your buyers are, and how you compare with other grip sock brands in Malaysia. Answers come from general market knowledge, not live prices, so it also tells you how to check them yourself.</p></div>
+    <div class="chips" id="mrChips">
+      <button type="button" class="chip" id="mrPrice" data-q="">Will customers pay my price?</button>
+      <button type="button" class="chip" data-q="Who is most likely to buy Pilates grip socks in Malaysia? Describe 2 or 3 types of customer, where to find them, and what they care about.">Who will buy my socks?</button>
+      <button type="button" class="chip" data-q="What kinds of grip sock brands and products will I be up against in Malaysia (cheap Shopee sellers, studio-branded socks, imported premium brands)? Roughly where do they price, and how can I stand out?">Who are my competitors?</button>
+      <button type="button" class="chip" id="mrBundle" data-q="">Is my bundle a good deal?</button>
+      <button type="button" class="chip" data-q="What would make customers happily pay a premium for my grip socks? Think about features, design, packaging and brand story.">What makes people pay more?</button>
+      <button type="button" class="chip" data-q="How can I test my price and demand cheaply before I order stock? Give me 3 or 4 simple tests I can run in the next 2 weeks.">How do I test demand cheaply?</button>
+    </div>
+    <div class="adv-log" id="mrLog" aria-live="polite"></div>
+    <form class="adv-form" id="mrForm">
+      <label for="mrInput" class="sr">Your market research question</label>
+      <input id="mrInput" autocomplete="off" placeholder="Ask about customers, prices or competitors, e.g. Would studios buy in bulk?">
+      <button type="submit" class="btn primary" id="mrSend">Ask</button>
+      <button type="button" class="btn" id="mrStop" hidden>Stop</button>
+    </form>
+    <div class="adv-foot"><span id="mrNote">A general guide based on what's typical, not a survey of your customers. Each question uses your own Claude account.</span><button type="button" class="linkbtn" id="mrClear" hidden>Start a new conversation</button></div>
   </section>
 
   <!-- 7. Check-in -->
@@ -683,7 +708,7 @@ function update(){
     mini('Stock + start-up costs',rm(M.need),I.savings>0?(M.need>I.savings?`${rm(M.need-I.savings)} more than your start-up money.`:`Leaves ${rm(I.savings-M.need)} of your ${rm(I.savings)} for ads and bills.`):'Paid before your first sale.')
   ].join('');
 
-  renderDonut(M); renderChart(M); renderWhatIf(R); renderCheckin(); renderExBadge(); renderTips(M);
+  renderDonut(M); renderChart(M); renderWhatIf(R); renderCheckin(); renderExBadge(); renderTips(M); renderMr();
 }
 
 /* 4. Donut */
@@ -964,6 +989,70 @@ $('dgChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c
 $('dgForm').addEventListener('submit',e=>{e.preventDefault();dgAsk($('dgInput').value)});
 $('dgStop').addEventListener('click',()=>dgCtl?.abort());
 $('dgClear').addEventListener('click',()=>{if(dgBusy)dgCtl?.abort();dgTurns=[];$('dgLog').innerHTML='';$('dgClear').hidden=true});
+
+/* ---------- Market research agent (same Claude connection) ---------- */
+function renderMr(){
+  const I=S.inputs,p=$('mrPrice'),b=$('mrBundle'); if(!p)return;
+  p.textContent=`Will customers pay ${rm(I.price1)}?`;
+  p.dataset.q=`Will customers in Malaysia pay ${rm(I.price1)} for one pair of Pilates grip socks? Compare with what people usually pay, say who would pay it, and what would make them feel it's worth it.`;
+  b.textContent=`Is ${rm(I.price2)} for 2 pairs a good deal?`;
+  b.dataset.q=`Is ${rm(I.price2)} for 2 pairs (and ${rm(I.price3)} for 3) a good bundle offer compared with ${rm(I.price1)} for one pair? Would customers see it as a deal, and how would you set it?`;
+}
+function mrRules(){
+  const I=S.inputs,m=runAll().mid;
+  return `You are a consumer market research analyst who knows the Malaysian e-commerce market (Shopee, Lazada, TikTok Shop, Instagram shops) and the Pilates, barre and yoga scene in Malaysia (studios in the Klang Valley, Penang, Johor Bahru and other cities).
+
+You are helping a first-time founder launching Pilates grip socks under a soft, premium "clouds and wings" brand. They want to know whether customers will pay their price, who their customers are, and how they compare with competitors.
+
+Honesty rules (very important):
+- You cannot browse or see live prices. Base answers on general knowledge of the market, and say clearly that prices are rough, may be out of date and vary by brand and channel.
+- Never invent specific competitor names with exact prices, survey results, statistics or sources. Describe types of competitors and rough RM price bands instead, e.g. "cheap unbranded socks on Shopee usually sit well below premium imported brands".
+- When a number matters, tell the founder exactly how to check it themselves: e.g. search "grip socks pilates" on Shopee and sort by best-selling, ask 3 local studios what they sell at the front desk, run an Instagram story poll, or put up a pre-order page.
+- Be direct: if the price looks high or low for the market, say so and why.
+
+Style: plain, friendly everyday English, no jargon (explain any term in a few words). Use RM.
+
+Format:
+- First line: a one-sentence answer.
+- Then 3 to 5 bullet points starting with "- ", each beginning with a bold label like **Likely buyers**, **Price check**, **Competition**, **What justifies the price** or **Test this**.
+- Last line: "Next step:" and one concrete action they can do this week.
+Under 220 words. No headings, no tables, no emojis.
+
+The founder's current plan:
+- Price: ${rm(I.price1,2)} for 1 pair, ${rm(I.price2,2)} for 2, ${rm(I.price3,2)} for 3. ${I.bundlePct}% of orders expected to be bundles.
+- Plans to sell about ${nf(I.pairsPerMonth)} pairs a month; first order ${nf(I.moq)} pairs.
+- Sells on own website (${nf(m.web)}% of orders), Shopee (${I.shopeePct}%) and TikTok Shop (${I.tiktokPct}%).
+- Expected ad cost to win one order: ${rm(I.cpa,2)}; ${I.organic}% of orders expected without ads.
+- Each pair costs about ${rm(m.landed,2)} to make and ship in; the founder keeps about ${rm(m.keepPair,2)} per pair after all costs and ads.`;
+}
+let mrTurns=[],mrCtl=null,mrBusy=false;
+function mrOff(msg){$('mrChips').hidden=true;$('mrForm').hidden=true;$('mrClear').hidden=true;$('mrNote').innerHTML=msg;$('mrNote').className='adv-off'}
+advReady.then(s=>{if(!s)mrOff(`Market research works when you open this page inside Claude: <a href="${ARTIFACT_URL}" target="_blank" rel="noopener">open it in Claude</a>.`)});
+function mrBubble(cls,html){const d=document.createElement('div');d.className='bub '+cls;d.innerHTML=html;$('mrLog').append(d);return d}
+function mrSetBusy(on){mrBusy=on;$('mrSend').disabled=on;$('mrStop').hidden=!on;document.querySelectorAll('#mrChips .chip').forEach(c=>c.disabled=on)}
+async function mrAsk(q){
+  q=q.trim(); if(!q||mrBusy)return;
+  const sample=advSample||await advReady; if(!sample)return;
+  mrBubble('me',esc(q)); $('mrInput').value=''; $('mrClear').hidden=false;
+  const bub=mrBubble('ai wait','Thinking about your market…');
+  mrTurns.push({role:'user',content:q});
+  const input=[{role:'user',content:mrRules()},...mrTurns.slice(-9)];
+  mrCtl=new AbortController(); mrSetBusy(true);
+  try{
+    const {text,truncated}=await sample(input,{cache:false,signal:mrCtl.signal,onText:({text})=>{bub.className='bub ai';bub.innerHTML=advMd(text)}});
+    bub.className='bub ai'; bub.innerHTML=advMd(text)+(truncated?'<p class="muted">(The answer was cut short. Ask a narrower question for the rest.)</p>':'');
+    mrTurns.push({role:'assistant',content:text});
+  }catch(e){
+    mrTurns.pop(); const code=e&&e.code;
+    if(code==='cancelled'){bub.className='bub ai';bub.innerHTML=e.text?advMd(e.text)+'<p class="muted">(Stopped.)</p>':'<p class="muted">Stopped.</p>'}
+    else if(['not_granted','sampling_disabled','not_declared','capability_disabled','capability_removed'].includes(code)){bub.remove();mrOff('Market research needs permission to use Claude. Reload the page and choose Allow when Claude asks.')}
+    else{bub.className='bub ai err';bub.innerHTML=(e&&e.text?advMd(e.text):'')+`<p>${code==='rate_limited'?'Too many questions in a short time. Wait a minute and ask again.':code==='session_expired'?'You have been signed out of Claude. Sign in again, then ask.':code==='refused'?'That question could not be answered. Try asking it a different way.':'Something went wrong getting an answer. Try asking again.'}</p>`}
+  }finally{mrSetBusy(false);mrCtl=null}
+}
+$('mrChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(c)mrAsk(c.dataset.q)});
+$('mrForm').addEventListener('submit',e=>{e.preventDefault();mrAsk($('mrInput').value)});
+$('mrStop').addEventListener('click',()=>mrCtl?.abort());
+$('mrClear').addEventListener('click',()=>{if(mrBusy)mrCtl?.abort();mrTurns=[];$('mrLog').innerHTML='';$('mrClear').hidden=true});
 
 /* ---------- Keep "?" help bubbles inside the screen ---------- */
 function placeTip(e){
